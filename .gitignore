@@ -1,0 +1,41 @@
+# Build output
+bin/
+obj/
+artifacts/
+publish/
+*.nupkg
+
+# User/local package folders
+/packages/
+
+# macOS
+.DS_Store
+*.dmg
+*.pkg
+
+# Windows installer output
+*.msi
+*.exe
+!PureSftp.exe
+!PureSFTP.exe
+
+# Rider / ReSharper
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/**/usage.statistics.xml
+.idea/**/dictionaries/
+.idea/**/shelf/
+riderModule.iml
+/_ReSharper.Caches/
+
+# Visual Studio / .NET local state
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp

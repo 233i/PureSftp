@@ -1,0 +1,114 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PureSFTP.ViewModels"
+        x:Class="PureSFTP.Views.NewConnectionWindow"
+        x:DataType="vm:NewConnectionViewModel"
+        Title="{Binding TitleText}"
+        Width="440"
+        Height="640"
+        MinHeight="560"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#EEF3F8">
+    <Window.Styles>
+        <Style Selector="TextBlock.label">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#5E7388" />
+        </Style>
+
+        <Style Selector="TextBlock.title">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#102236" />
+        </Style>
+
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#F6F9FC" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="BorderBrush" Value="#D7E1EB" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#102236" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="CornerRadius" Value="6" />
+        </Style>
+
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="#FFFFFF" />
+            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="BorderBrush" Value="#CAD6E2" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="CornerRadius" Value="6" />
+        </Style>
+    </Window.Styles>
+
+    <Border Margin="18"
+            Padding="22"
+            Background="#FCFDFE"
+            BorderBrush="#D7E1EB"
+            BorderThickness="1"
+            CornerRadius="8">
+        <Grid RowDefinitions="Auto,*,Auto" RowSpacing="18">
+            <StackPanel Spacing="4">
+                <TextBlock Classes="title" Text="{Binding TitleText}" />
+                <TextBlock Foreground="#6A7F93"
+                           Text="{Binding DescriptionText}"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto">
+                <StackPanel Spacing="12">
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="label" Text="{Binding NameLabel}" />
+                        <TextBox PlaceholderText="Production server" Text="{Binding Name, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="label" Text="{Binding HostLabel}" />
+                        <TextBox PlaceholderText="sftp.example.com" Text="{Binding Host, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="label" Text="{Binding PortLabel}" />
+                        <TextBox MaxLength="5"
+                                 PlaceholderText="22"
+                                 Text="{Binding PortText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="label" Text="{Binding UsernameLabel}" />
+                        <TextBox PlaceholderText="username" Text="{Binding Username, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Classes="label" Text="{Binding PasswordLabel}" />
+                        <TextBox PasswordChar="*" PlaceholderText="password" Text="{Binding Password, Mode=TwoWay}" />
+                    </StackPanel>
+
+                    <TextBlock Foreground="#6A7F93"
+                               Text="{Binding TestMessage}"
+                               TextWrapping="Wrap" />
+                </StackPanel>
+            </ScrollViewer>
+
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="10">
+                <Button Classes="secondary"
+                        Command="{Binding TestConnectionCommand}"
+                        Content="{Binding TestButtonText}" />
+                <Button Grid.Column="1"
+                        Classes="primary"
+                        Command="{Binding SaveCommand}"
+                        Content="{Binding SaveButtonText}" />
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

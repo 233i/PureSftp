@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PureSFTP.Views.TextInputWindow"
+        Width="340"
+        Height="74"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        WindowDecorations="None"
+        Background="#EEF3F8"
+        KeyDown="OnKeyDown">
+    <Window.Styles>
+        <Style Selector="TextBox">
+            <Setter Property="Background" Value="#F6F9FC" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12,10" />
+            <Setter Property="BorderBrush" Value="#D7E1EB" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#102236" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Padding" Value="16,10" />
+            <Setter Property="CornerRadius" Value="6" />
+        </Style>
+    </Window.Styles>
+
+    <Border Margin="10"
+            Padding="10"
+            Background="#FCFDFE"
+            BorderBrush="#D7E1EB"
+            BorderThickness="1"
+            CornerRadius="8">
+        <TextBox Name="InputTextBox" />
+    </Border>
+</Window>

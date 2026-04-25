@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="PureSftp icon">
+  <defs>
+    <linearGradient id="bg" x1="128" y1="96" x2="896" y2="928" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#18314a"/>
+      <stop offset="1" stop-color="#071521"/>
+    </linearGradient>
+    <linearGradient id="folder" x1="238" y1="338" x2="786" y2="760" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#cfe1f2"/>
+    </linearGradient>
+    <linearGradient id="arrow" x1="352" y1="410" x2="672" y2="650" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#28c99a"/>
+      <stop offset="1" stop-color="#0f9f7b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="220" fill="url(#bg)"/>
+  <circle cx="810" cy="204" r="126" fill="#ffffff" opacity=".08"/>
+  <circle cx="214" cy="824" r="172" fill="#ffffff" opacity=".05"/>
+  <path fill="url(#folder)" d="M214 332c0-44 36-80 80-80h142c30 0 58 15 74 40l28 42h192c44 0 80 36 80 80v276c0 44-36 80-80 80H294c-44 0-80-36-80-80V332z"/>
+  <path fill="#ffffff" opacity=".72" d="M266 432c0-34 28-62 62-62h368c34 0 62 28 62 62v224c0 34-28 62-62 62H328c-34 0-62-28-62-62V432z"/>
+  <path fill="url(#arrow)" d="M514 408c18 0 34 7 47 20l124 124c25 25 25 67 0 92s-67 25-92 0l-14-14v14c0 36-29 65-65 65s-65-29-65-65v-14l-14 14c-25 25-67 25-92 0s-25-67 0-92l124-124c13-13 29-20 47-20z"/>
+  <path fill="#102236" opacity=".18" d="M449 560h130v86c0 36-29 65-65 65s-65-29-65-65v-86z"/>
+</svg>
