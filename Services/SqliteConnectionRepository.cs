@@ -82,6 +82,69 @@ public sealed class SqliteConnectionRepository : IConnectionRepository
         };
     }
 
+    public SavedConnection Update(SavedConnection savedConnection)
+    {
+        var now = DateTimeOffset.Now;
+
+        using var connection = CreateConnection();
+        connection.Open();
+
+        using var command = connection.CreateCommand();
+        command.CommandText = """
+            UPDATE saved_connections
+            SET name = $name,
+                host = $host,
+                port = $port,
+                username = $username,
+                password = $password,
+                updated_at = $updatedAt
+            WHERE id = $id;
+            """;
+        command.Parameters.AddWithValue("$id", savedConnection.Id);
+        command.Parameters.AddWithValue("$name", savedConnection.Name);
+        command.Parameters.AddWithValue("$host", savedConnection.Host);
+        command.Parameters.AddWithValue("$port", savedConnection.Port);
+        command.Parameters.AddWithValue("$username", savedConnection.Username);
+        command.Parameters.AddWithValue("$password", savedConnection.Password);
+        command.Parameters.AddWithValue("$updatedAt", now.ToString("O"));
+        command.ExecuteNonQuery();
+
+        return new SavedConnection
+        {
+            Id = savedConnection.Id,
+            Name = savedConnection.Name,
+            Host = savedConnection.Host,
+            Port = savedConnection.Port,
+            Username = savedConnection.Username,
+            Password = savedConnection.Password,
+            CreatedAt = savedConnection.CreatedAt,
+            UpdatedAt = now,
+        };
+    }
+
+    public void Delete(long id)
+    {
+        using var connection = CreateConnection();
+        connection.Open();
+
+        using var command = connection.CreateCommand();
+        command.CommandText = "DELETE FROM saved_connections WHERE id = $id;";
+        command.Parameters.AddWithValue("$id", id);
+        command.ExecuteNonQuery();
+    }
+
+    public void ClearPassword(long id)
+    {
+        using var connection = CreateConnection();
+        connection.Open();
+
+        using var command = connection.CreateCommand();
+        command.CommandText = "UPDATE saved_connections SET password = '', updated_at = $updatedAt WHERE id = $id;";
+        command.Parameters.AddWithValue("$id", id);
+        command.Parameters.AddWithValue("$updatedAt", DateTimeOffset.Now.ToString("O"));
+        command.ExecuteNonQuery();
+    }
+
     private SqliteConnection CreateConnection()
     {
         return new SqliteConnection($"Data Source={_databasePath}");

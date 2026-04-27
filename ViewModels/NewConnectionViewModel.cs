@@ -12,6 +12,7 @@ public partial class NewConnectionViewModel : ViewModelBase
 {
     private readonly ISftpClientService _sftpClientService;
     private readonly ILocalizationService _localizationService;
+    private readonly SavedConnection? _existingConnection;
     private string portText = "22";
 
     [ObservableProperty]
@@ -46,13 +47,28 @@ public partial class NewConnectionViewModel : ViewModelBase
         _localizationService = localizationService;
     }
 
+    public NewConnectionViewModel(
+        ISftpClientService sftpClientService,
+        ILocalizationService localizationService,
+        SavedConnection existingConnection,
+        string password)
+        : this(sftpClientService, localizationService)
+    {
+        _existingConnection = existingConnection;
+        name = existingConnection.Name;
+        host = existingConnection.Host;
+        portText = existingConnection.Port.ToString();
+        username = existingConnection.Username;
+        this.password = password;
+    }
+
     public event EventHandler? SaveRequested;
 
     public SavedConnection? Result { get; private set; }
 
-    public string TitleText => T("NewConnectionTitle");
+    public string TitleText => _existingConnection is null ? T("NewConnectionTitle") : T("EditConnectionTitle");
 
-    public string DescriptionText => T("NewConnectionDescription");
+    public string DescriptionText => _existingConnection is null ? T("NewConnectionDescription") : T("EditConnectionDescription");
 
     public string NameLabel => T("ConnectionNameLabel");
 
@@ -66,7 +82,7 @@ public partial class NewConnectionViewModel : ViewModelBase
 
     public string TestButtonText => T("TestConnectionButton");
 
-    public string SaveButtonText => T("SaveConnectionButton");
+    public string SaveButtonText => _existingConnection is null ? T("SaveConnectionButton") : T("UpdateConnectionButton");
 
     public string PortText
     {
@@ -121,11 +137,14 @@ public partial class NewConnectionViewModel : ViewModelBase
     {
         Result = new SavedConnection
         {
+            Id = _existingConnection?.Id ?? 0,
             Name = Name.Trim(),
             Host = Host.Trim(),
             Port = Port,
             Username = Username.Trim(),
             Password = Password,
+            CreatedAt = _existingConnection?.CreatedAt ?? DateTimeOffset.Now,
+            UpdatedAt = DateTimeOffset.Now,
         };
         SaveRequested?.Invoke(this, EventArgs.Empty);
     }

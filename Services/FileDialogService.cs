@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
@@ -15,34 +16,52 @@ public sealed class FileDialogService : IFileDialogService
 
     public async Task<string?> PickUploadFileAsync()
     {
+        return (await PickUploadFilesAsync()).FirstOrDefault();
+    }
+
+    public async Task<IReadOnlyList<string>> PickUploadFilesAsync()
+    {
         if (_storageProvider is null)
         {
-            return null;
+            return [];
         }
 
         var files = await _storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Choose a local file to upload",
-            AllowMultiple = false,
+            AllowMultiple = true,
         });
 
-        return files.FirstOrDefault()?.TryGetLocalPath();
+        return files
+            .Select(file => file.TryGetLocalPath())
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Select(path => path!)
+            .ToList();
     }
 
     public async Task<string?> PickUploadFolderAsync(string title)
     {
+        return (await PickUploadFoldersAsync(title)).FirstOrDefault();
+    }
+
+    public async Task<IReadOnlyList<string>> PickUploadFoldersAsync(string title)
+    {
         if (_storageProvider is null)
         {
-            return null;
+            return [];
         }
 
         var folders = await _storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
             Title = title,
-            AllowMultiple = false,
+            AllowMultiple = true,
         });
 
-        return folders.FirstOrDefault()?.TryGetLocalPath();
+        return folders
+            .Select(folder => folder.TryGetLocalPath())
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Select(path => path!)
+            .ToList();
     }
 
     public async Task<string?> PickDownloadTargetFileAsync(string suggestedFileName)

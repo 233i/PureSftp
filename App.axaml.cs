@@ -30,8 +30,10 @@ public partial class App : Application
             var fileDialogService = new FileDialogService();
             var newConnectionDialogService = new NewConnectionDialogService();
             var textInputDialogService = new TextInputDialogService();
+            var choiceDialogService = new ChoiceDialogService();
             var sftpClientService = new SftpClientService();
             var connectionRepository = new SqliteConnectionRepository(databasePath);
+            var credentialStore = new SystemCredentialStore();
             var localizationService = new LocalizationService(appSettings.Language);
             var settingsViewModel = new SettingsViewModel(localizationService, appSettingsService);
             var mainWindowViewModel = new MainWindowViewModel(
@@ -40,10 +42,12 @@ public partial class App : Application
                 localizationService,
                 settingsViewModel,
                 connectionRepository,
+                credentialStore,
                 newConnectionDialogService,
-                textInputDialogService);
+                textInputDialogService,
+                choiceDialogService);
 
-            desktop.MainWindow = new MainWindow(fileDialogService, newConnectionDialogService, textInputDialogService)
+            desktop.MainWindow = new MainWindow(fileDialogService, newConnectionDialogService, textInputDialogService, choiceDialogService)
             {
                 DataContext = mainWindowViewModel,
             };

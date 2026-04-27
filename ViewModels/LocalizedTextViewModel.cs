@@ -45,6 +45,10 @@ public sealed class LocalizedTextViewModel : ViewModelBase
 
     public string NewConnectionButton => _localizationService.Get("NewConnectionButton");
 
+    public string EditConnectionButton => _localizationService.Get("EditConnectionButton");
+
+    public string DeleteConnectionButton => _localizationService.Get("DeleteConnectionButton");
+
     public string NoConnectionsHint => _localizationService.Get("NoConnectionsHint");
 
     public string TaskCenterTitle => _localizationService.Get("TaskCenterTitle");

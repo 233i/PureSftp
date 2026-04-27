@@ -30,10 +30,37 @@ public sealed class RemoteItem
 
     public string IconText =>
         IsParentShortcut
-            ? ".."
+            ? "↑"
             : IsDirectory
-                ? "DIR"
-                : "FILE";
+                ? "■"
+                : "●";
+
+    public bool ShowFolderIcon => IsDirectory && !IsParentShortcut;
+
+    public bool ShowFileIcon => !IsDirectory && !IsParentShortcut;
+
+    public bool ShowParentIcon => IsParentShortcut;
+
+    public string TypeDotColor =>
+        IsParentShortcut
+            ? "#8A9AAC"
+            : IsDirectory
+                ? "#D99625"
+                : "#2C7BE5";
+
+    public string TypeBadgeBackground =>
+        IsParentShortcut
+            ? "#EEF2F6"
+            : IsDirectory
+                ? "#FFF4DF"
+                : "#EAF2FF";
+
+    public string TypeBadgeForeground =>
+        IsParentShortcut
+            ? "#6A7F93"
+            : IsDirectory
+                ? "#8A5A0A"
+                : "#1F5FBF";
 
     public static RemoteItem CreateParentShortcut(string parentPath)
     {

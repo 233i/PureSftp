@@ -20,6 +20,10 @@ public interface ISftpClientService : IAsyncDisposable
 
     Task<IReadOnlyList<RemoteItem>> ListDirectoryAsync(string remotePath);
 
+    Task<bool> ExistsAsync(string remotePath);
+
+    Task<long> GetSizeAsync(RemoteItem item);
+
     Task UploadFileAsync(string localPath, string remoteDirectory, IProgress<TransferProgress>? progress = null, CancellationToken cancellationToken = default);
 
     Task UploadDirectoryAsync(string localDirectoryPath, string remoteDirectory, IProgress<TransferProgress>? progress = null, CancellationToken cancellationToken = default);

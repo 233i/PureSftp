@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
@@ -19,8 +21,10 @@ public partial class MainWindowViewModel : ViewModelBase
     private readonly IFileDialogService _fileDialogService;
     private readonly ILocalizationService _localizationService;
     private readonly IConnectionRepository _connectionRepository;
+    private readonly ICredentialStore _credentialStore;
     private readonly INewConnectionDialogService _newConnectionDialogService;
     private readonly ITextInputDialogService _textInputDialogService;
+    private readonly IChoiceDialogService _choiceDialogService;
 
     [ObservableProperty]
     private bool isBusy;
@@ -59,16 +63,20 @@ public partial class MainWindowViewModel : ViewModelBase
         ILocalizationService LocalizationService,
         SettingsViewModel SettingsViewModel,
         IConnectionRepository ConnectionRepository,
+        ICredentialStore CredentialStore,
         INewConnectionDialogService NewConnectionDialogService,
-        ITextInputDialogService TextInputDialogService) services)
+        ITextInputDialogService TextInputDialogService,
+        IChoiceDialogService ChoiceDialogService) services)
         : this(
             services.SftpClientService,
             services.FileDialogService,
             services.LocalizationService,
             services.SettingsViewModel,
             services.ConnectionRepository,
+            services.CredentialStore,
             services.NewConnectionDialogService,
-            services.TextInputDialogService)
+            services.TextInputDialogService,
+            services.ChoiceDialogService)
     {
     }
 
@@ -78,15 +86,19 @@ public partial class MainWindowViewModel : ViewModelBase
         ILocalizationService localizationService,
         SettingsViewModel settings,
         IConnectionRepository connectionRepository,
+        ICredentialStore credentialStore,
         INewConnectionDialogService newConnectionDialogService,
-        ITextInputDialogService textInputDialogService)
+        ITextInputDialogService textInputDialogService,
+        IChoiceDialogService choiceDialogService)
     {
         _sftpClientService = sftpClientService;
         _fileDialogService = fileDialogService;
         _localizationService = localizationService;
         _connectionRepository = connectionRepository;
+        _credentialStore = credentialStore;
         _newConnectionDialogService = newConnectionDialogService;
         _textInputDialogService = textInputDialogService;
+        _choiceDialogService = choiceDialogService;
 
         Texts = new LocalizedTextViewModel(_localizationService);
         Settings = settings;
@@ -155,6 +167,11 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         get
         {
+            if (Browser.SelectedItemCount > 1)
+            {
+                return T("SelectionSummaryMany", Browser.SelectedItemCount);
+            }
+
             if (Browser.SelectedItem is null)
             {
                 return T("SelectionSummaryNone");
@@ -171,6 +188,12 @@ public partial class MainWindowViewModel : ViewModelBase
                 Browser.SelectedItem.FullPath);
         }
     }
+
+    public string SortNameHeader => GetSortHeader(T("NameHeader"), RemoteSortColumn.Name);
+
+    public string SortSizeHeader => GetSortHeader(T("SizeHeader"), RemoteSortColumn.Size);
+
+    public string SortModifiedHeader => GetSortHeader(T("ModifiedHeader"), RemoteSortColumn.ModifiedAt);
 
     partial void OnIsBusyChanged(bool value)
     {
@@ -211,10 +234,12 @@ public partial class MainWindowViewModel : ViewModelBase
             return;
         }
 
-        var savedConnection = _connectionRepository.Add(connection);
+        var savedConnection = SaveConnectionWithCredential(connection);
         var viewModel = new SavedConnectionViewModel(savedConnection);
         SavedConnections.Insert(0, viewModel);
         OnConnectionsChanged();
+        StatusMessage = T("StatusConnectionSaved", savedConnection.Name);
+        ShowToast(StatusMessage);
     }
 
     [RelayCommand]
@@ -227,13 +252,14 @@ public partial class MainWindowViewModel : ViewModelBase
 
         await RunBusyAsync(T("StatusConnecting"), async () =>
         {
-            await _sftpClientService.ConnectAsync(savedConnection.Connection.ToOptions());
+            var password = GetSavedPassword(savedConnection.Connection);
+            await _sftpClientService.ConnectAsync(savedConnection.Connection.ToOptions(password));
             SetActiveConnection(savedConnection);
             IsConnected = true;
             Connection.Host = savedConnection.Connection.Host;
             Connection.PortText = savedConnection.Connection.Port.ToString();
             Connection.Username = savedConnection.Connection.Username;
-            Connection.Password = savedConnection.Connection.Password;
+            Connection.Password = password;
 
             var workingDirectory = await _sftpClientService.GetWorkingDirectoryAsync();
             await LoadDirectoryCoreAsync(workingDirectory);
@@ -246,6 +272,75 @@ public partial class MainWindowViewModel : ViewModelBase
             await _sftpClientService.DisconnectAsync();
             StatusMessage = error.Message;
         });
+    }
+
+    [RelayCommand]
+    private async Task EditSavedConnectionAsync(SavedConnectionViewModel? savedConnection)
+    {
+        if (savedConnection is null)
+        {
+            return;
+        }
+
+        var oldConnection = savedConnection.Connection;
+        var password = GetSavedPassword(oldConnection);
+        var dialogViewModel = new NewConnectionViewModel(_sftpClientService, _localizationService, oldConnection, password);
+        var editedConnection = await _newConnectionDialogService.ShowAsync(dialogViewModel);
+        if (editedConnection is null)
+        {
+            return;
+        }
+
+        var shouldDisconnect = savedConnection.IsActive && HasConnectionTargetChanged(oldConnection, editedConnection);
+        if (shouldDisconnect)
+        {
+            await DisconnectAsync();
+        }
+
+        var updatedConnection = UpdateConnectionWithCredential(editedConnection);
+        savedConnection.UpdateConnection(updatedConnection);
+        StatusMessage = T("StatusConnectionUpdated", updatedConnection.Name);
+        ShowToast(StatusMessage);
+        OnPropertyChanged(nameof(ConnectionSummary));
+    }
+
+    [RelayCommand]
+    private async Task DeleteSavedConnectionAsync(SavedConnectionViewModel? savedConnection)
+    {
+        if (savedConnection is null)
+        {
+            return;
+        }
+
+        if (savedConnection.IsActive)
+        {
+            await DisconnectAsync();
+        }
+
+        TryDeletePassword(savedConnection.Connection);
+        _connectionRepository.Delete(savedConnection.Id);
+        SavedConnections.Remove(savedConnection);
+        OnConnectionsChanged();
+        StatusMessage = T("StatusConnectionDeleted", savedConnection.Name);
+        ShowToast(StatusMessage);
+    }
+
+    [RelayCommand]
+    private void SortByName()
+    {
+        SortBy(RemoteSortColumn.Name);
+    }
+
+    [RelayCommand]
+    private void SortBySize()
+    {
+        SortBy(RemoteSortColumn.Size);
+    }
+
+    [RelayCommand]
+    private void SortByModifiedAt()
+    {
+        SortBy(RemoteSortColumn.ModifiedAt);
     }
 
     private bool CanConnect() => !IsConnected && Connection.IsReady;
@@ -262,10 +357,10 @@ public partial class MainWindowViewModel : ViewModelBase
     private bool CanUpload() => IsConnected;
 
     private bool CanDownload() =>
-        IsConnected && Browser.SelectedItem is { IsParentShortcut: false };
+        IsConnected && GetSelectedTransferItems().Count > 0;
 
     private bool CanDeleteSelected() =>
-        IsConnected && Browser.SelectedItem is { IsParentShortcut: false };
+        IsConnected && GetSelectedTransferItems().Count > 0;
 
     private bool CanCreateFolder() => IsConnected && !string.IsNullOrWhiteSpace(NewFolderName);
 
@@ -367,135 +462,99 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand(CanExecute = nameof(CanUpload))]
     private async Task UploadAsync()
     {
-        var localPath = await _fileDialogService.PickUploadFileAsync();
-        if (string.IsNullOrWhiteSpace(localPath))
+        var localPaths = await _fileDialogService.PickUploadFilesAsync();
+        if (localPaths.Count == 0)
         {
             StatusMessage = T("StatusUploadCancelled");
             return;
         }
 
-        var fileName = Path.GetFileName(localPath);
-        using var cancellationTokenSource = new CancellationTokenSource();
-        var toast = ShowProgressToast(
-            T("StatusUploading", fileName),
-            T("CancelButton"),
-            cancellationTokenSource.Cancel);
-        var progress = new Progress<TransferProgress>(transferProgress =>
-        {
-            toast.Progress = transferProgress.Percent;
-        });
-
-        await RunBusyAsync(T("StatusUploading", fileName), async () =>
-        {
-            await _sftpClientService.UploadFileAsync(localPath, Browser.CurrentPath, progress, cancellationTokenSource.Token);
-            await LoadDirectoryCoreAsync(Browser.CurrentPath);
-            StatusMessage = T("StatusUploaded", fileName);
-            CompleteProgressToast(toast, T("ToastUploadSuccess"));
-        },
-        error =>
-        {
-            StatusMessage = error is OperationCanceledException ? T("StatusUploadCancelled") : error.Message;
-            CompleteProgressToast(toast, StatusMessage);
-            return Task.CompletedTask;
-        });
+        await UploadPathsAsync(localPaths);
     }
 
     [RelayCommand(CanExecute = nameof(CanUpload))]
     private async Task UploadFolderAsync()
     {
-        var localFolderPath = await _fileDialogService.PickUploadFolderAsync(T("DialogUploadFolderTitle"));
-        if (string.IsNullOrWhiteSpace(localFolderPath))
+        var localFolderPaths = await _fileDialogService.PickUploadFoldersAsync(T("DialogUploadFolderTitle"));
+        if (localFolderPaths.Count == 0)
         {
             StatusMessage = T("StatusUploadCancelled");
             return;
         }
 
-        var folderName = new DirectoryInfo(localFolderPath).Name;
-        using var cancellationTokenSource = new CancellationTokenSource();
-        var toast = ShowProgressToast(
-            T("StatusUploadingFolder", folderName),
-            T("CancelButton"),
-            cancellationTokenSource.Cancel);
-        var progress = new Progress<TransferProgress>(transferProgress =>
-        {
-            toast.Progress = transferProgress.Percent;
-        });
+        await UploadPathsAsync(localFolderPaths);
+    }
 
-        await RunBusyAsync(T("StatusUploadingFolder", folderName), async () =>
+    public async Task UploadDroppedPathsAsync(IReadOnlyList<string> localPaths)
+    {
+        if (!IsConnected || localPaths.Count == 0)
         {
-            await _sftpClientService.UploadDirectoryAsync(localFolderPath, Browser.CurrentPath, progress, cancellationTokenSource.Token);
-            await LoadDirectoryCoreAsync(Browser.CurrentPath);
-            StatusMessage = T("StatusUploadedFolder", folderName);
-            CompleteProgressToast(toast, T("ToastUploadSuccess"));
-        },
-        error =>
-        {
-            StatusMessage = error is OperationCanceledException ? T("StatusUploadCancelled") : error.Message;
-            CompleteProgressToast(toast, StatusMessage);
-            return Task.CompletedTask;
-        });
+            return;
+        }
+
+        await UploadPathsAsync(localPaths);
     }
 
     [RelayCommand(CanExecute = nameof(CanDownload))]
     private async Task DownloadAsync()
     {
-        var selectedItem = Browser.SelectedItem;
-        if (selectedItem is null || selectedItem.IsParentShortcut)
+        var selectedItems = GetSelectedTransferItems();
+        if (selectedItems.Count == 0)
         {
             return;
         }
 
-        if (selectedItem.IsDirectory)
+        if (selectedItems.Count == 1 && !selectedItems[0].IsDirectory)
         {
-            var localFolder = await _fileDialogService.PickLocalFolderAsync(T("DialogDownloadFolderTitle"));
-            if (string.IsNullOrWhiteSpace(localFolder))
+            var selectedItem = selectedItems[0];
+            var localFilePath = await _fileDialogService.PickDownloadTargetFileAsync(selectedItem.Name);
+            if (string.IsNullOrWhiteSpace(localFilePath))
             {
                 StatusMessage = T("StatusDownloadCancelled");
                 return;
             }
 
-            await RunBusyAsync(T("StatusDownloading", selectedItem.Name), async () =>
+            await DownloadItemsAsync(selectedItems, new Dictionary<string, string>
             {
-                var targetFolder = Path.Combine(localFolder, selectedItem.Name);
-                await _sftpClientService.DownloadDirectoryAsync(selectedItem.FullPath, targetFolder);
-                StatusMessage = T("StatusDownloadedFolder", selectedItem.Name);
-                ShowToast(T("ToastDownloadSuccess"));
+                [selectedItem.FullPath] = localFilePath,
             });
 
             return;
         }
 
-        var localFilePath = await _fileDialogService.PickDownloadTargetFileAsync(selectedItem.Name);
-        if (string.IsNullOrWhiteSpace(localFilePath))
+        var localFolder = await _fileDialogService.PickLocalFolderAsync(T("DialogDownloadFolderTitle"));
+        if (string.IsNullOrWhiteSpace(localFolder))
         {
             StatusMessage = T("StatusDownloadCancelled");
             return;
         }
 
-        await RunBusyAsync(T("StatusDownloading", selectedItem.Name), async () =>
-        {
-            await _sftpClientService.DownloadFileAsync(selectedItem.FullPath, localFilePath);
-            StatusMessage = T("StatusDownloadedFile", selectedItem.Name);
-            ShowToast(T("ToastDownloadSuccess"));
-        });
+        await DownloadItemsAsync(selectedItems, selectedItems.ToDictionary(
+            item => item.FullPath,
+            item => Path.Combine(localFolder, item.Name)));
     }
 
     [RelayCommand(CanExecute = nameof(CanDeleteSelected))]
     private async Task DeleteSelectedAsync()
     {
-        var selectedItem = Browser.SelectedItem;
-        if (selectedItem is null || selectedItem.IsParentShortcut)
+        var selectedItems = GetSelectedTransferItems();
+        if (selectedItems.Count == 0)
         {
             return;
         }
 
-        await RunBusyAsync(T("StatusDeleting", selectedItem.Name), async () =>
+        var confirmChoice = await _choiceDialogService.ShowAsync(
+            T("DeleteConfirmTitle"),
+            T("DeleteConfirmMessage", selectedItems.Count),
+            T("DeleteConfirmButton"),
+            T("CancelButton"));
+
+        if (confirmChoice != DialogChoice.Primary)
         {
-            await _sftpClientService.DeleteAsync(selectedItem);
-            await LoadDirectoryCoreAsync(Browser.CurrentPath);
-            StatusMessage = T("StatusDeleted", selectedItem.Name);
-            ShowToast(StatusMessage);
-        });
+            return;
+        }
+
+        await DeleteItemsAsync(selectedItems);
     }
 
     [RelayCommand(CanExecute = nameof(CanCreateFolder))]
@@ -533,6 +592,295 @@ public partial class MainWindowViewModel : ViewModelBase
         Browser.CurrentPath = normalizedPath;
         var items = await _sftpClientService.ListDirectoryAsync(normalizedPath);
         Browser.ReplaceItems(items);
+    }
+
+    private async Task UploadPathsAsync(IReadOnlyList<string> localPaths)
+    {
+        var uploadPaths = NormalizeExistingLocalPaths(localPaths);
+        if (uploadPaths.Count == 0)
+        {
+            StatusMessage = T("StatusNoUploadableItems");
+            ShowToast(StatusMessage);
+            return;
+        }
+
+        using var cancellationTokenSource = new CancellationTokenSource();
+        var toast = ShowProgressToast(
+            T("StatusUploadingBatch", uploadPaths.Count),
+            T("CancelButton"),
+            cancellationTokenSource.Cancel);
+
+        await RunBusyAsync(T("StatusUploadingBatch", uploadPaths.Count), async () =>
+        {
+            var totalBytes = uploadPaths.Sum(GetLocalPathSize);
+            var completedBytes = 0L;
+
+            foreach (var localPath in uploadPaths)
+            {
+                cancellationTokenSource.Token.ThrowIfCancellationRequested();
+
+                var localName = GetLocalPathName(localPath);
+                var localSize = GetLocalPathSize(localPath);
+                var remoteTargetPath = RemotePathHelper.Combine(Browser.CurrentPath, localName);
+                var shouldUpload = await ConfirmRemoteOverwriteAsync(remoteTargetPath);
+                if (!shouldUpload)
+                {
+                    completedBytes += localSize;
+                    toast.Progress = CalculatePercent(completedBytes, totalBytes);
+                    continue;
+                }
+
+                var progress = CreateAggregateProgress(toast, completedBytes, totalBytes);
+                if (File.Exists(localPath))
+                {
+                    await _sftpClientService.UploadFileAsync(localPath, Browser.CurrentPath, progress, cancellationTokenSource.Token);
+                }
+                else
+                {
+                    await _sftpClientService.UploadDirectoryAsync(localPath, Browser.CurrentPath, progress, cancellationTokenSource.Token);
+                }
+
+                completedBytes += localSize;
+                toast.Progress = CalculatePercent(completedBytes, totalBytes);
+            }
+
+            await LoadDirectoryCoreAsync(Browser.CurrentPath);
+            StatusMessage = T("StatusUploadedBatch", uploadPaths.Count);
+            CompleteProgressToast(toast, T("ToastUploadSuccess"));
+        },
+        error =>
+        {
+            StatusMessage = error is OperationCanceledException
+                ? T("StatusUploadCancelled")
+                : T("StatusUploadFailed", error.Message);
+            CompleteProgressToast(toast, StatusMessage);
+
+            if (error is not OperationCanceledException)
+            {
+                ShowRetryToast(StatusMessage, () => UploadPathsAsync(uploadPaths));
+            }
+
+            return Task.CompletedTask;
+        });
+    }
+
+    private async Task DownloadItemsAsync(IReadOnlyList<RemoteItem> items, IReadOnlyDictionary<string, string> targetPaths)
+    {
+        var toast = ShowProgressToast(T("StatusDownloadingBatch", items.Count));
+
+        await RunBusyAsync(T("StatusPreparingDownload"), async () =>
+        {
+            var itemSizes = new Dictionary<string, long>();
+            foreach (var item in items)
+            {
+                itemSizes[item.FullPath] = await _sftpClientService.GetSizeAsync(item);
+            }
+
+            var totalBytes = itemSizes.Values.Sum();
+            var completedBytes = 0L;
+
+            foreach (var item in items)
+            {
+                if (!targetPaths.TryGetValue(item.FullPath, out var targetPath))
+                {
+                    continue;
+                }
+
+                var itemSize = itemSizes[item.FullPath];
+                var shouldDownload = await ConfirmLocalOverwriteAsync(targetPath);
+                if (!shouldDownload)
+                {
+                    completedBytes += itemSize;
+                    toast.Progress = CalculatePercent(completedBytes, totalBytes);
+                    continue;
+                }
+
+                var progress = CreateAggregateProgress(toast, completedBytes, totalBytes);
+                if (item.IsDirectory)
+                {
+                    await _sftpClientService.DownloadDirectoryAsync(item.FullPath, targetPath, progress);
+                }
+                else
+                {
+                    await _sftpClientService.DownloadFileAsync(item.FullPath, targetPath, progress);
+                }
+
+                completedBytes += itemSize;
+                toast.Progress = CalculatePercent(completedBytes, totalBytes);
+            }
+
+            StatusMessage = T("StatusDownloadedBatch", items.Count);
+            CompleteProgressToast(toast, T("ToastDownloadSuccess"));
+        },
+        error =>
+        {
+            StatusMessage = error is OperationCanceledException
+                ? T("StatusDownloadCancelled")
+                : T("StatusDownloadFailed", error.Message);
+            CompleteProgressToast(toast, StatusMessage);
+
+            if (error is not OperationCanceledException)
+            {
+                ShowRetryToast(StatusMessage, () => DownloadItemsAsync(items, targetPaths));
+            }
+
+            return Task.CompletedTask;
+        });
+    }
+
+    private async Task DeleteItemsAsync(IReadOnlyList<RemoteItem> items)
+    {
+        var toast = ShowProgressToast(T("StatusDeletingBatch", items.Count));
+
+        await RunBusyAsync(T("StatusDeletingBatch", items.Count), async () =>
+        {
+            for (var index = 0; index < items.Count; index++)
+            {
+                var item = items[index];
+                if (await _sftpClientService.ExistsAsync(item.FullPath))
+                {
+                    await _sftpClientService.DeleteAsync(item);
+                }
+
+                toast.Progress = CalculatePercent(index + 1, items.Count);
+            }
+
+            await LoadDirectoryCoreAsync(Browser.CurrentPath);
+            StatusMessage = T("StatusDeletedBatch", items.Count);
+            CompleteProgressToast(toast, StatusMessage);
+        },
+        error =>
+        {
+            StatusMessage = T("StatusDeleteFailed", error.Message);
+            CompleteProgressToast(toast, StatusMessage);
+            ShowRetryToast(StatusMessage, () => DeleteItemsAsync(items));
+            return Task.CompletedTask;
+        });
+    }
+
+    private async Task<bool> ConfirmRemoteOverwriteAsync(string remotePath)
+    {
+        if (!await _sftpClientService.ExistsAsync(remotePath))
+        {
+            return true;
+        }
+
+        var choice = await _choiceDialogService.ShowAsync(
+            T("OverwriteTitle"),
+            T("OverwriteRemoteMessage", remotePath),
+            T("OverwriteButton"),
+            T("CancelButton"),
+            T("SkipButton"));
+
+        return choice switch
+        {
+            DialogChoice.Primary => true,
+            DialogChoice.Secondary => false,
+            _ => throw new OperationCanceledException(),
+        };
+    }
+
+    private async Task<bool> ConfirmLocalOverwriteAsync(string localPath)
+    {
+        if (!File.Exists(localPath) && !Directory.Exists(localPath))
+        {
+            return true;
+        }
+
+        var choice = await _choiceDialogService.ShowAsync(
+            T("OverwriteTitle"),
+            T("OverwriteLocalMessage", localPath),
+            T("OverwriteButton"),
+            T("CancelButton"),
+            T("SkipButton"));
+
+        return choice switch
+        {
+            DialogChoice.Primary => true,
+            DialogChoice.Secondary => false,
+            _ => throw new OperationCanceledException(),
+        };
+    }
+
+    private IReadOnlyList<RemoteItem> GetSelectedTransferItems()
+    {
+        if (Browser.SelectedItems.Count > 0)
+        {
+            return Browser.SelectedItems
+                .Where(item => !item.IsParentShortcut)
+                .ToList();
+        }
+
+        return Browser.SelectedItem is { IsParentShortcut: false } selectedItem
+            ? [selectedItem]
+            : [];
+    }
+
+    private static IReadOnlyList<string> NormalizeExistingLocalPaths(IEnumerable<string> localPaths)
+    {
+        return localPaths
+            .Where(path => !string.IsNullOrWhiteSpace(path))
+            .Select(path => path.Trim())
+            .Where(path => File.Exists(path) || Directory.Exists(path))
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+    }
+
+    private static string GetLocalPathName(string localPath)
+    {
+        if (Directory.Exists(localPath))
+        {
+            return new DirectoryInfo(localPath).Name;
+        }
+
+        return Path.GetFileName(localPath);
+    }
+
+    private static long GetLocalPathSize(string localPath)
+    {
+        if (File.Exists(localPath))
+        {
+            return new FileInfo(localPath).Length;
+        }
+
+        return Directory.Exists(localPath)
+            ? GetLocalDirectorySize(new DirectoryInfo(localPath))
+            : 0;
+    }
+
+    private static long GetLocalDirectorySize(DirectoryInfo directory)
+    {
+        var totalBytes = 0L;
+
+        foreach (var file in directory.EnumerateFiles().Where(file => !file.Attributes.HasFlag(FileAttributes.ReparsePoint)))
+        {
+            totalBytes += file.Length;
+        }
+
+        foreach (var childDirectory in directory.EnumerateDirectories().Where(child => !child.Attributes.HasFlag(FileAttributes.ReparsePoint)))
+        {
+            totalBytes += GetLocalDirectorySize(childDirectory);
+        }
+
+        return totalBytes;
+    }
+
+    private static IProgress<TransferProgress> CreateAggregateProgress(
+        ToastMessageViewModel toast,
+        long completedBytes,
+        long totalBytes)
+    {
+        return new Progress<TransferProgress>(transferProgress =>
+        {
+            toast.Progress = CalculatePercent(completedBytes + transferProgress.BytesTransferred, totalBytes);
+        });
+    }
+
+    private static double CalculatePercent(long completed, long total)
+    {
+        return total <= 0
+            ? 100
+            : Math.Clamp(completed * 100d / total, 0, 100);
     }
 
     private async Task RunBusyAsync(string busyMessage, Func<Task> action, Func<Exception, Task>? onError = null)
@@ -577,10 +925,124 @@ public partial class MainWindowViewModel : ViewModelBase
         SavedConnections.Clear();
         foreach (var connection in _connectionRepository.GetAll())
         {
-            SavedConnections.Add(new SavedConnectionViewModel(connection));
+            SavedConnections.Add(new SavedConnectionViewModel(MigrateStoredPassword(connection)));
         }
 
         OnConnectionsChanged();
+    }
+
+    private SavedConnection SaveConnectionWithCredential(SavedConnection connection)
+    {
+        var password = connection.Password;
+        var savedConnection = _connectionRepository.Add(connection.WithPassword(string.Empty));
+
+        if (!string.IsNullOrEmpty(password) && !TrySavePassword(savedConnection, password))
+        {
+            savedConnection = _connectionRepository.Update(savedConnection.WithPassword(password));
+        }
+
+        return savedConnection;
+    }
+
+    private SavedConnection UpdateConnectionWithCredential(SavedConnection connection)
+    {
+        var password = connection.Password;
+        var savedConnection = _connectionRepository.Update(connection.WithPassword(string.Empty));
+
+        if (string.IsNullOrEmpty(password))
+        {
+            TryDeletePassword(savedConnection);
+            return savedConnection;
+        }
+
+        if (!TrySavePassword(savedConnection, password))
+        {
+            savedConnection = _connectionRepository.Update(savedConnection.WithPassword(password));
+        }
+
+        return savedConnection;
+    }
+
+    private SavedConnection MigrateStoredPassword(SavedConnection connection)
+    {
+        if (string.IsNullOrEmpty(connection.Password))
+        {
+            return connection;
+        }
+
+        if (!TrySavePassword(connection, connection.Password))
+        {
+            return connection;
+        }
+
+        _connectionRepository.ClearPassword(connection.Id);
+        return connection.WithPassword(string.Empty);
+    }
+
+    private string GetSavedPassword(SavedConnection connection)
+    {
+        try
+        {
+            return _credentialStore.ReadPassword(connection) ?? connection.Password;
+        }
+        catch
+        {
+            return connection.Password;
+        }
+    }
+
+    private bool TrySavePassword(SavedConnection connection, string password)
+    {
+        try
+        {
+            return _credentialStore.SavePassword(connection, password);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private void TryDeletePassword(SavedConnection connection)
+    {
+        try
+        {
+            _credentialStore.DeletePassword(connection);
+        }
+        catch
+        {
+            // Credential cleanup is best-effort; the SQLite row remains the source of truth.
+        }
+    }
+
+    private void SortBy(RemoteSortColumn sortColumn)
+    {
+        Browser.SortBy(sortColumn);
+        RefreshSortHeaders();
+    }
+
+    private void RefreshSortHeaders()
+    {
+        OnPropertyChanged(nameof(SortNameHeader));
+        OnPropertyChanged(nameof(SortSizeHeader));
+        OnPropertyChanged(nameof(SortModifiedHeader));
+    }
+
+    private string GetSortHeader(string title, RemoteSortColumn sortColumn)
+    {
+        if (Browser.SortColumn != sortColumn)
+        {
+            return title;
+        }
+
+        return $"{title} {(Browser.IsSortAscending ? "^" : "v")}";
+    }
+
+    private static bool HasConnectionTargetChanged(SavedConnection oldConnection, SavedConnection newConnection)
+    {
+        return !string.Equals(oldConnection.Host, newConnection.Host, StringComparison.OrdinalIgnoreCase) ||
+            oldConnection.Port != newConnection.Port ||
+            !string.Equals(oldConnection.Username, newConnection.Username, StringComparison.Ordinal);
     }
 
     private void OnConnectionsChanged()
@@ -612,6 +1074,20 @@ public partial class MainWindowViewModel : ViewModelBase
         ScheduleToastClose(toast);
     }
 
+    private void ShowRetryToast(string message, Func<Task> retryAction)
+    {
+        var toast = AddToast(message, false, T("RetryButton"), () =>
+        {
+            _ = Dispatcher.UIThread.InvokeAsync(async () => await retryAction());
+        });
+        ScheduleToastClose(toast, 8000);
+    }
+
+    private ToastMessageViewModel ShowProgressToast(string message)
+    {
+        return AddToast(message, true);
+    }
+
     private ToastMessageViewModel ShowProgressToast(string message, string cancelText, Action cancelAction)
     {
         return AddToast(message, true, cancelText, cancelAction);
@@ -640,11 +1116,11 @@ public partial class MainWindowViewModel : ViewModelBase
         ScheduleToastClose(toast);
     }
 
-    private void ScheduleToastClose(ToastMessageViewModel toast)
+    private void ScheduleToastClose(ToastMessageViewModel toast, int delayMilliseconds = 3000)
     {
         _ = Dispatcher.UIThread.InvokeAsync(async () =>
         {
-            await Task.Delay(3000);
+            await Task.Delay(delayMilliseconds);
             toast.IsClosing = true;
             await Task.Delay(260);
             Toasts.Remove(toast);
@@ -663,7 +1139,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void OnBrowserChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is nameof(RemoteBrowserViewModel.SelectedItem) or nameof(RemoteBrowserViewModel.CurrentPath))
+        if (e.PropertyName is nameof(RemoteBrowserViewModel.SelectedItem) or nameof(RemoteBrowserViewModel.SelectedItems) or nameof(RemoteBrowserViewModel.CurrentPath))
         {
             OpenSelectedCommand.NotifyCanExecuteChanged();
             GoToParentCommand.NotifyCanExecuteChanged();
@@ -679,6 +1155,7 @@ public partial class MainWindowViewModel : ViewModelBase
         OnPropertyChanged(nameof(ConnectionStateText));
         OnPropertyChanged(nameof(ConnectionSummary));
         OnPropertyChanged(nameof(SelectionSummary));
+        RefreshSortHeaders();
     }
 
     private static (
@@ -687,8 +1164,10 @@ public partial class MainWindowViewModel : ViewModelBase
         ILocalizationService LocalizationService,
         SettingsViewModel SettingsViewModel,
         IConnectionRepository ConnectionRepository,
+        ICredentialStore CredentialStore,
         INewConnectionDialogService NewConnectionDialogService,
-        ITextInputDialogService TextInputDialogService)
+        ITextInputDialogService TextInputDialogService,
+        IChoiceDialogService ChoiceDialogService)
         CreateDesignServices()
     {
         var localizationService = new LocalizationService(AppLanguage.English);
@@ -702,7 +1181,9 @@ public partial class MainWindowViewModel : ViewModelBase
             localizationService,
             new SettingsViewModel(localizationService, appSettingsService),
             new SqliteConnectionRepository(databasePath),
+            new SystemCredentialStore(),
             new NewConnectionDialogService(),
-            new TextInputDialogService());
+            new TextInputDialogService(),
+            new ChoiceDialogService());
     }
 }

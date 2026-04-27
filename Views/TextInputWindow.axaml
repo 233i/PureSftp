@@ -1,8 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="PureSFTP.Views.TextInputWindow"
-        Width="340"
-        Height="74"
+        Width="360"
+        Height="92"
+        MinWidth="340"
+        MinHeight="92"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         WindowDecorations="None"
@@ -26,7 +28,7 @@
     </Window.Styles>
 
     <Border Margin="10"
-            Padding="10"
+            Padding="8"
             Background="#FCFDFE"
             BorderBrush="#D7E1EB"
             BorderThickness="1"

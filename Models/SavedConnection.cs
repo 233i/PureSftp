@@ -20,14 +20,29 @@ public sealed class SavedConnection
 
     public DateTimeOffset UpdatedAt { get; init; } = DateTimeOffset.Now;
 
-    public SftpConnectionOptions ToOptions()
+    public SftpConnectionOptions ToOptions(string? password = null)
     {
         return new SftpConnectionOptions
         {
             Host = Host,
             Port = Port,
             Username = Username,
-            Password = Password,
+            Password = password ?? Password,
+        };
+    }
+
+    public SavedConnection WithPassword(string password)
+    {
+        return new SavedConnection
+        {
+            Id = Id,
+            Name = Name,
+            Host = Host,
+            Port = Port,
+            Username = Username,
+            Password = password,
+            CreatedAt = CreatedAt,
+            UpdatedAt = UpdatedAt,
         };
     }
 }

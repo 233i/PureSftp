@@ -45,6 +45,8 @@ public sealed partial class ToastMessageViewModel : ViewModelBase
 
     public string ProgressText => $"{Progress:0}%";
 
+    public bool IsActionVisible => IsCancelable && !IsProgressVisible;
+
     public double ToastOpacity => IsShown && !IsClosing ? 1 : 0;
 
     public Thickness ToastMargin => IsShown && !IsClosing ? new Thickness(0, 0, 0, 8) : new Thickness(0, 0, -360, 8);
@@ -60,6 +62,16 @@ public sealed partial class ToastMessageViewModel : ViewModelBase
         OnPropertyChanged(nameof(ToastOpacity));
         OnPropertyChanged(nameof(ToastMargin));
         CancelTransferCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsProgressVisibleChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsActionVisible));
+    }
+
+    partial void OnIsCancelableChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsActionVisible));
     }
 
     partial void OnProgressChanged(double value)

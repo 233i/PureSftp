@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 
@@ -9,7 +10,11 @@ public interface IFileDialogService
 
     Task<string?> PickUploadFileAsync();
 
+    Task<IReadOnlyList<string>> PickUploadFilesAsync();
+
     Task<string?> PickUploadFolderAsync(string title);
+
+    Task<IReadOnlyList<string>> PickUploadFoldersAsync(string title);
 
     Task<string?> PickDownloadTargetFileAsync(string suggestedFileName);
 

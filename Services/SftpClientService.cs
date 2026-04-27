@@ -85,6 +85,26 @@ public sealed class SftpClientService : ISftpClientService
         });
     }
 
+    public async Task<bool> ExistsAsync(string remotePath)
+    {
+        return await Task.Run(() => GetClient().Exists(remotePath));
+    }
+
+    public async Task<long> GetSizeAsync(RemoteItem item)
+    {
+        return await Task.Run(() =>
+        {
+            var client = GetClient();
+
+            if (item.IsDirectory)
+            {
+                return GetDirectorySize(client, item.FullPath);
+            }
+
+            return client.Get(item.FullPath).Attributes.Size;
+        });
+    }
+
     public async Task UploadFileAsync(string localPath, string remoteDirectory, IProgress<TransferProgress>? progress = null, CancellationToken cancellationToken = default)
     {
         await Task.Run(() =>

@@ -239,6 +239,21 @@
             <Setter Property="Background" Value="#294866" />
             <Setter Property="Foreground" Value="White" />
         </Style>
+
+        <Style Selector="Button.headerButton">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#5E7388" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+        </Style>
+
+        <Style Selector="Button.headerButton:pointerover">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="#102236" />
+        </Style>
     </Window.Styles>
 
     <NativeMenu.Menu>
@@ -334,14 +349,17 @@
                                 Padding="16,14"
                                 BorderBrush="#D7E1EB"
                                 BorderThickness="0,0,0,1">
-                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                                <StackPanel Spacing="2">
-                                    <TextBlock Classes="sectionTitle"
-                                               FontSize="17"
-                                               Text="{Binding Texts.ConnectionsTitle}" />
-                                </StackPanel>
+                            <Grid ColumnDefinitions="*,Auto"
+                                  ColumnSpacing="10"
+                                  MinHeight="40"
+                                  VerticalAlignment="Center">
+                                <TextBlock Classes="sectionTitle"
+                                           FontSize="17"
+                                           VerticalAlignment="Center"
+                                           Text="{Binding Texts.ConnectionsTitle}" />
                                 <Button Grid.Column="1"
                                         Classes="primary"
+                                        VerticalAlignment="Center"
                                         Command="{Binding ShowNewConnectionCommand}"
                                         Content="{Binding Texts.NewConnectionButton}" />
                             </Grid>
@@ -366,8 +384,19 @@
                                  Name="SavedConnectionsListBox"
                                  Classes="connections"
                                  DoubleTapped="OnSavedConnectionsDoubleTapped"
+                                 PointerPressed="OnSavedConnectionsPointerPressed"
                                  ItemsSource="{Binding SavedConnections}"
                                  IsVisible="{Binding HasSavedConnections}">
+                            <ListBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Classes="fileMenuItem"
+                                              Header="{Binding Texts.EditConnectionButton}"
+                                              Click="OnEditSavedConnectionMenuClick" />
+                                    <MenuItem Classes="fileMenuItem"
+                                              Header="{Binding Texts.DeleteConnectionButton}"
+                                              Click="OnDeleteSavedConnectionMenuClick" />
+                                </ContextMenu>
+                            </ListBox.ContextMenu>
                             <ListBox.ItemTemplate>
                                 <DataTemplate x:DataType="vm:SavedConnectionViewModel">
                                     <Grid ColumnDefinitions="16,*"
@@ -436,12 +465,21 @@
                                 BorderBrush="#D7E1EB"
                                 BorderThickness="0,1,0,1"
                                 Padding="12,8">
-                            <Grid ColumnDefinitions="48,*,100,120,160" ColumnSpacing="12">
+                            <Grid ColumnDefinitions="48,*,72,120,160" ColumnSpacing="12">
                                 <TextBlock Classes="label" Text="" />
-                                <TextBlock Grid.Column="1" Classes="label" Text="{Binding Texts.NameHeader}" />
-                                <TextBlock Grid.Column="2" Classes="label" Text="{Binding Texts.TypeHeader}" />
-                                <TextBlock Grid.Column="3" Classes="label" Text="{Binding Texts.SizeHeader}" />
-                                <TextBlock Grid.Column="4" Classes="label" Text="{Binding Texts.ModifiedHeader}" />
+                                <Button Grid.Column="1"
+                                        Classes="headerButton"
+                                        Command="{Binding SortByNameCommand}"
+                                        Content="{Binding SortNameHeader}" />
+                                <TextBlock Grid.Column="2" Classes="label" Text="" />
+                                <Button Grid.Column="3"
+                                        Classes="headerButton"
+                                        Command="{Binding SortBySizeCommand}"
+                                        Content="{Binding SortSizeHeader}" />
+                                <Button Grid.Column="4"
+                                        Classes="headerButton"
+                                        Command="{Binding SortByModifiedAtCommand}"
+                                        Content="{Binding SortModifiedHeader}" />
                             </Grid>
                         </Border>
 
@@ -450,6 +488,11 @@
                                  Background="#FCFDFE"
                                  BorderThickness="0"
                                  DoubleTapped="OnRemoteItemsDoubleTapped"
+                                 SelectionMode="Multiple"
+                                 SelectionChanged="OnRemoteItemsSelectionChanged"
+                                 DragDrop.AllowDrop="True"
+                                 DragDrop.DragOver="OnRemoteItemsDragOver"
+                                 DragDrop.Drop="OnRemoteItemsDrop"
                                  ItemsSource="{Binding Browser.Items}"
                                  SelectedItem="{Binding Browser.SelectedItem, Mode=TwoWay}">
                             <ListBox.ContextMenu>
@@ -478,19 +521,85 @@
                                             BorderThickness="0,0,0,1"
                                             Padding="12,7"
                                             MinHeight="36">
-                                        <Grid ColumnDefinitions="48,*,100,120,160" ColumnSpacing="12">
-                                            <TextBlock VerticalAlignment="Center"
-                                                       Classes="subtle"
-                                                       Text="{Binding IconText}" />
+                                        <Grid ColumnDefinitions="48,*,72,120,160" ColumnSpacing="12">
+                                            <Grid Width="30"
+                                                  Height="26"
+                                                  VerticalAlignment="Center"
+                                                  HorizontalAlignment="Center">
+                                                <Grid IsVisible="{Binding ShowFolderIcon}">
+                                                    <Border Width="26"
+                                                            Height="17"
+                                                            CornerRadius="4"
+                                                            Background="#F6C15B"
+                                                            VerticalAlignment="Bottom"
+                                                            HorizontalAlignment="Center" />
+                                                    <Border Width="15"
+                                                            Height="7"
+                                                            CornerRadius="3,3,0,0"
+                                                            Background="#E9A738"
+                                                            Margin="3,2,0,0"
+                                                            VerticalAlignment="Top"
+                                                            HorizontalAlignment="Left" />
+                                                    <Border Width="26"
+                                                            Height="13"
+                                                            CornerRadius="4"
+                                                            Background="#FFD66E"
+                                                            VerticalAlignment="Bottom"
+                                                            HorizontalAlignment="Center" />
+                                                </Grid>
+
+                                                <Grid IsVisible="{Binding ShowFileIcon}">
+                                                    <Border Width="21"
+                                                            Height="25"
+                                                            CornerRadius="4"
+                                                            Background="#EAF2FF"
+                                                            BorderBrush="#9BBBE8"
+                                                            BorderThickness="1"
+                                                            HorizontalAlignment="Center" />
+                                                    <Path Data="M 16 1 L 21 6 L 16 6 Z"
+                                                          Fill="#CFE0F8"
+                                                          HorizontalAlignment="Center" />
+                                                    <Border Width="11"
+                                                            Height="2"
+                                                            Background="#5D8DD6"
+                                                            CornerRadius="1"
+                                                            Margin="0,10,0,0"
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Top" />
+                                                    <Border Width="11"
+                                                            Height="2"
+                                                            Background="#A7C3EA"
+                                                            CornerRadius="1"
+                                                            Margin="0,15,0,0"
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Top" />
+                                                </Grid>
+
+                                                <Grid IsVisible="{Binding ShowParentIcon}">
+                                                    <Border Width="24"
+                                                            Height="24"
+                                                            CornerRadius="12"
+                                                            Background="#EEF2F6"
+                                                            BorderBrush="#D7E1EB"
+                                                            BorderThickness="1" />
+                                                    <Path Data="M 15 7 L 9 13 L 15 19"
+                                                          Stroke="#6A7F93"
+                                                          StrokeThickness="2"
+                                                          StrokeLineCap="Round"
+                                                          StrokeJoin="Round" />
+                                                </Grid>
+                                            </Grid>
                                             <TextBlock Grid.Column="1"
                                                        VerticalAlignment="Center"
                                                        Classes="value"
                                                        Text="{Binding Name}"
                                                        TextTrimming="CharacterEllipsis" />
-                                            <TextBlock Grid.Column="2"
-                                                       VerticalAlignment="Center"
-                                                       Classes="subtle"
-                                                       Text="{Binding ItemType}" />
+                                            <Ellipse Grid.Column="2"
+                                                     Width="8"
+                                                     Height="8"
+                                                     Fill="{Binding TypeDotColor}"
+                                                     VerticalAlignment="Center"
+                                                     HorizontalAlignment="Left" />
                                             <TextBlock Grid.Column="3"
                                                        VerticalAlignment="Center"
                                                        Classes="subtle"
@@ -601,7 +710,7 @@
                                     <DoubleTransition Property="Opacity" Duration="0:0:0.18" />
                                 </Transitions>
                             </Border.Transitions>
-                            <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+                            <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
                                 <TextBlock Foreground="White"
                                            Text="{Binding Message}"
                                            TextWrapping="Wrap" />
@@ -624,6 +733,12 @@
                                             Content="{Binding CancelText}"
                                             IsVisible="{Binding IsCancelable}" />
                                 </Grid>
+                                <Button Grid.Row="2"
+                                        Classes="toastAction"
+                                        HorizontalAlignment="Right"
+                                        Command="{Binding CancelTransferCommand}"
+                                        Content="{Binding CancelText}"
+                                        IsVisible="{Binding IsActionVisible}" />
                             </Grid>
                         </Border>
                     </DataTemplate>

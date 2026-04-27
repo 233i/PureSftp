@@ -13,7 +13,7 @@ public partial class SavedConnectionViewModel : ViewModelBase
         Connection = connection;
     }
 
-    public SavedConnection Connection { get; }
+    public SavedConnection Connection { get; private set; }
 
     public long Id => Connection.Id;
 
@@ -22,4 +22,14 @@ public partial class SavedConnectionViewModel : ViewModelBase
     public string Endpoint => $"{Connection.Host}:{Connection.Port}";
 
     public string Username => Connection.Username;
+
+    public void UpdateConnection(SavedConnection connection)
+    {
+        Connection = connection;
+        OnPropertyChanged(nameof(Connection));
+        OnPropertyChanged(nameof(Id));
+        OnPropertyChanged(nameof(Name));
+        OnPropertyChanged(nameof(Endpoint));
+        OnPropertyChanged(nameof(Username));
+    }
 }
