@@ -39,6 +39,8 @@ public sealed class LocalizedTextViewModel : ViewModelBase
 
     public string ViewMenu => _localizationService.Get("ViewMenu");
 
+    public string CancelButton => _localizationService.Get("CancelButton");
+
     public string ConnectionsTitle => _localizationService.Get("ConnectionsTitle");
 
     public string NewConnectionButton => _localizationService.Get("NewConnectionButton");
@@ -74,6 +76,8 @@ public sealed class LocalizedTextViewModel : ViewModelBase
     public string ActionsTitle => _localizationService.Get("ActionsTitle");
 
     public string UploadButton => _localizationService.Get("UploadButton");
+
+    public string UploadFolderButton => _localizationService.Get("UploadFolderButton");
 
     public string DownloadButton => _localizationService.Get("DownloadButton");
 

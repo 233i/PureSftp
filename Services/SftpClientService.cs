@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using PureSFTP.Models;
 using Renci.SshNet;
@@ -84,20 +85,67 @@ public sealed class SftpClientService : ISftpClientService
         });
     }
 
-    public async Task UploadFileAsync(string localPath, string remoteDirectory, IProgress<TransferProgress>? progress = null)
+    public async Task UploadFileAsync(string localPath, string remoteDirectory, IProgress<TransferProgress>? progress = null, CancellationToken cancellationToken = default)
     {
         await Task.Run(() =>
         {
             var client = GetClient();
             var remotePath = Utilities.RemotePathHelper.Combine(remoteDirectory, Path.GetFileName(localPath));
+            var tempRemotePath = CreateUploadTempPath(remotePath);
             var totalBytes = new FileInfo(localPath).Length;
 
-            using var fileStream = File.OpenRead(localPath);
-            client.UploadFile(fileStream, remotePath, true, bytes =>
+            try
             {
-                progress?.Report(new TransferProgress((long)bytes, totalBytes));
-            });
-        });
+                cancellationToken.ThrowIfCancellationRequested();
+
+                using var fileStream = File.OpenRead(localPath);
+                client.UploadFile(fileStream, tempRemotePath, true, bytes =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    progress?.Report(new TransferProgress((long)bytes, totalBytes));
+                });
+
+                cancellationToken.ThrowIfCancellationRequested();
+                ReplaceRemoteFile(client, tempRemotePath, remotePath);
+                progress?.Report(new TransferProgress(totalBytes, totalBytes));
+            }
+            catch
+            {
+                DeleteRemoteFileIfExists(client, tempRemotePath);
+                throw;
+            }
+        }, cancellationToken);
+    }
+
+    public async Task UploadDirectoryAsync(string localDirectoryPath, string remoteDirectory, IProgress<TransferProgress>? progress = null, CancellationToken cancellationToken = default)
+    {
+        await Task.Run(() =>
+        {
+            var client = GetClient();
+            var directory = new DirectoryInfo(localDirectoryPath);
+            if (!directory.Exists)
+            {
+                throw new DirectoryNotFoundException(localDirectoryPath);
+            }
+
+            var totalBytes = GetLocalDirectorySize(directory);
+            var uploadedBytes = 0L;
+            var remoteRootPath = Utilities.RemotePathHelper.Combine(remoteDirectory, directory.Name);
+            var remoteRootExisted = client.Exists(remoteRootPath);
+
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                EnsureRemoteDirectory(client, remoteRootPath);
+                UploadDirectoryCore(client, directory, remoteRootPath, totalBytes, ref uploadedBytes, progress, cancellationToken);
+                progress?.Report(new TransferProgress(uploadedBytes, totalBytes));
+            }
+            catch (OperationCanceledException) when (!remoteRootExisted)
+            {
+                DeleteDirectoryIfExists(client, remoteRootPath);
+                throw;
+            }
+        }, cancellationToken);
     }
 
     public async Task DownloadFileAsync(string remoteFilePath, string localPath, IProgress<TransferProgress>? progress = null)
@@ -191,6 +239,108 @@ public sealed class SftpClientService : ISftpClientService
         }
 
         return totalBytes;
+    }
+
+    private static long GetLocalDirectorySize(DirectoryInfo directory)
+    {
+        var totalBytes = 0L;
+
+        foreach (var file in directory.EnumerateFiles().Where(file => !file.Attributes.HasFlag(FileAttributes.ReparsePoint)))
+        {
+            totalBytes += file.Length;
+        }
+
+        foreach (var childDirectory in directory.EnumerateDirectories().Where(child => !child.Attributes.HasFlag(FileAttributes.ReparsePoint)))
+        {
+            totalBytes += GetLocalDirectorySize(childDirectory);
+        }
+
+        return totalBytes;
+    }
+
+    private static void UploadDirectoryCore(
+        SftpClient client,
+        DirectoryInfo localDirectory,
+        string remoteDirectoryPath,
+        long totalBytes,
+        ref long uploadedBytes,
+        IProgress<TransferProgress>? progress,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        EnsureRemoteDirectory(client, remoteDirectoryPath);
+
+        foreach (var childDirectory in localDirectory.EnumerateDirectories().Where(child => !child.Attributes.HasFlag(FileAttributes.ReparsePoint)))
+        {
+            var childRemotePath = Utilities.RemotePathHelper.Combine(remoteDirectoryPath, childDirectory.Name);
+            UploadDirectoryCore(client, childDirectory, childRemotePath, totalBytes, ref uploadedBytes, progress, cancellationToken);
+        }
+
+        foreach (var file in localDirectory.EnumerateFiles().Where(file => !file.Attributes.HasFlag(FileAttributes.ReparsePoint)))
+        {
+            var remoteFilePath = Utilities.RemotePathHelper.Combine(remoteDirectoryPath, file.Name);
+            var tempRemoteFilePath = CreateUploadTempPath(remoteFilePath);
+            var fileStartBytes = uploadedBytes;
+
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                using var fileStream = file.OpenRead();
+                client.UploadFile(fileStream, tempRemoteFilePath, true, bytes =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    progress?.Report(new TransferProgress(fileStartBytes + (long)bytes, totalBytes));
+                });
+
+                cancellationToken.ThrowIfCancellationRequested();
+                ReplaceRemoteFile(client, tempRemoteFilePath, remoteFilePath);
+            }
+            catch
+            {
+                DeleteRemoteFileIfExists(client, tempRemoteFilePath);
+                throw;
+            }
+
+            uploadedBytes += file.Length;
+            progress?.Report(new TransferProgress(uploadedBytes, totalBytes));
+        }
+    }
+
+    private static string CreateUploadTempPath(string remotePath) => $"{remotePath}.puresftp-uploading-{Guid.NewGuid():N}";
+
+    private static void ReplaceRemoteFile(SftpClient client, string tempRemotePath, string remotePath)
+    {
+        if (client.Exists(remotePath))
+        {
+            client.DeleteFile(remotePath);
+        }
+
+        client.RenameFile(tempRemotePath, remotePath);
+    }
+
+    private static void DeleteRemoteFileIfExists(SftpClient client, string remotePath)
+    {
+        if (client.Exists(remotePath))
+        {
+            client.DeleteFile(remotePath);
+        }
+    }
+
+    private static void DeleteDirectoryIfExists(SftpClient client, string remoteDirectoryPath)
+    {
+        if (client.Exists(remoteDirectoryPath))
+        {
+            DeleteDirectoryCore(client, remoteDirectoryPath);
+        }
+    }
+
+    private static void EnsureRemoteDirectory(SftpClient client, string remoteDirectoryPath)
+    {
+        if (!client.Exists(remoteDirectoryPath))
+        {
+            client.CreateDirectory(remoteDirectoryPath);
+        }
     }
 
     private static void DownloadDirectoryCore(

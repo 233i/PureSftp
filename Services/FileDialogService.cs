@@ -29,6 +29,22 @@ public sealed class FileDialogService : IFileDialogService
         return files.FirstOrDefault()?.TryGetLocalPath();
     }
 
+    public async Task<string?> PickUploadFolderAsync(string title)
+    {
+        if (_storageProvider is null)
+        {
+            return null;
+        }
+
+        var folders = await _storageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = title,
+            AllowMultiple = false,
+        });
+
+        return folders.FirstOrDefault()?.TryGetLocalPath();
+    }
+
     public async Task<string?> PickDownloadTargetFileAsync(string suggestedFileName)
     {
         if (_storageProvider is null)

@@ -224,6 +224,21 @@
         <Style Selector="MenuItem.fileMenuItem:disabled">
             <Setter Property="Foreground" Value="#8A9AAC" />
         </Style>
+
+        <Style Selector="Button.toastAction">
+            <Setter Property="Background" Value="#203953" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="#31506E" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="FontSize" Value="11" />
+        </Style>
+
+        <Style Selector="Button.toastAction:pointerover">
+            <Setter Property="Background" Value="#294866" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
     </Window.Styles>
 
     <NativeMenu.Menu>
@@ -245,6 +260,8 @@
                     <NativeMenu>
                         <NativeMenuItem Header="{Binding Texts.UploadButton}"
                                         Command="{Binding UploadCommand}" />
+                        <NativeMenuItem Header="{Binding Texts.UploadFolderButton}"
+                                        Command="{Binding UploadFolderCommand}" />
                         <NativeMenuItem Header="{Binding Texts.DownloadButton}"
                                         Command="{Binding DownloadCommand}" />
                         <NativeMenuItemSeparator />
@@ -441,6 +458,9 @@
                                               Header="{Binding Texts.UploadButton}"
                                               Command="{Binding UploadCommand}" />
                                     <MenuItem Classes="fileMenuItem"
+                                              Header="{Binding Texts.UploadFolderButton}"
+                                              Command="{Binding UploadFolderCommand}" />
+                                    <MenuItem Classes="fileMenuItem"
                                               Header="{Binding Texts.DownloadButton}"
                                               Command="{Binding DownloadCommand}" />
                                     <MenuItem Classes="fileMenuItem"
@@ -581,9 +601,30 @@
                                     <DoubleTransition Property="Opacity" Duration="0:0:0.18" />
                                 </Transitions>
                             </Border.Transitions>
-                            <TextBlock Foreground="White"
-                                       Text="{Binding Message}"
-                                       TextWrapping="Wrap" />
+                            <Grid RowDefinitions="Auto,Auto" RowSpacing="8">
+                                <TextBlock Foreground="White"
+                                           Text="{Binding Message}"
+                                           TextWrapping="Wrap" />
+                                <Grid Grid.Row="1"
+                                      ColumnDefinitions="*,Auto,Auto"
+                                      ColumnSpacing="10"
+                                      IsVisible="{Binding IsProgressVisible}">
+                                    <ProgressBar Minimum="0"
+                                                 Maximum="100"
+                                                 Height="6"
+                                                 Value="{Binding Progress}" />
+                                    <TextBlock Grid.Column="1"
+                                               VerticalAlignment="Center"
+                                               FontSize="11"
+                                               Foreground="#D5E2F0"
+                                               Text="{Binding ProgressText}" />
+                                    <Button Grid.Column="2"
+                                            Classes="toastAction"
+                                            Command="{Binding CancelTransferCommand}"
+                                            Content="{Binding CancelText}"
+                                            IsVisible="{Binding IsCancelable}" />
+                                </Grid>
+                            </Grid>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -31,6 +32,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(OpenSelectedCommand))]
     [NotifyCanExecuteChangedFor(nameof(GoToParentCommand))]
     [NotifyCanExecuteChangedFor(nameof(UploadCommand))]
+    [NotifyCanExecuteChangedFor(nameof(UploadFolderCommand))]
     [NotifyCanExecuteChangedFor(nameof(DownloadCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteSelectedCommand))]
     [NotifyCanExecuteChangedFor(nameof(CreateFolderCommand))]
@@ -373,13 +375,64 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         var fileName = Path.GetFileName(localPath);
+        using var cancellationTokenSource = new CancellationTokenSource();
+        var toast = ShowProgressToast(
+            T("StatusUploading", fileName),
+            T("CancelButton"),
+            cancellationTokenSource.Cancel);
+        var progress = new Progress<TransferProgress>(transferProgress =>
+        {
+            toast.Progress = transferProgress.Percent;
+        });
 
         await RunBusyAsync(T("StatusUploading", fileName), async () =>
         {
-            await _sftpClientService.UploadFileAsync(localPath, Browser.CurrentPath);
+            await _sftpClientService.UploadFileAsync(localPath, Browser.CurrentPath, progress, cancellationTokenSource.Token);
             await LoadDirectoryCoreAsync(Browser.CurrentPath);
             StatusMessage = T("StatusUploaded", fileName);
-            ShowToast(T("ToastUploadSuccess"));
+            CompleteProgressToast(toast, T("ToastUploadSuccess"));
+        },
+        error =>
+        {
+            StatusMessage = error is OperationCanceledException ? T("StatusUploadCancelled") : error.Message;
+            CompleteProgressToast(toast, StatusMessage);
+            return Task.CompletedTask;
+        });
+    }
+
+    [RelayCommand(CanExecute = nameof(CanUpload))]
+    private async Task UploadFolderAsync()
+    {
+        var localFolderPath = await _fileDialogService.PickUploadFolderAsync(T("DialogUploadFolderTitle"));
+        if (string.IsNullOrWhiteSpace(localFolderPath))
+        {
+            StatusMessage = T("StatusUploadCancelled");
+            return;
+        }
+
+        var folderName = new DirectoryInfo(localFolderPath).Name;
+        using var cancellationTokenSource = new CancellationTokenSource();
+        var toast = ShowProgressToast(
+            T("StatusUploadingFolder", folderName),
+            T("CancelButton"),
+            cancellationTokenSource.Cancel);
+        var progress = new Progress<TransferProgress>(transferProgress =>
+        {
+            toast.Progress = transferProgress.Percent;
+        });
+
+        await RunBusyAsync(T("StatusUploadingFolder", folderName), async () =>
+        {
+            await _sftpClientService.UploadDirectoryAsync(localFolderPath, Browser.CurrentPath, progress, cancellationTokenSource.Token);
+            await LoadDirectoryCoreAsync(Browser.CurrentPath);
+            StatusMessage = T("StatusUploadedFolder", folderName);
+            CompleteProgressToast(toast, T("ToastUploadSuccess"));
+        },
+        error =>
+        {
+            StatusMessage = error is OperationCanceledException ? T("StatusUploadCancelled") : error.Message;
+            CompleteProgressToast(toast, StatusMessage);
+            return Task.CompletedTask;
         });
     }
 
@@ -506,7 +559,10 @@ public partial class MainWindowViewModel : ViewModelBase
                 StatusMessage = exception.Message;
             }
 
-            ShowToast(exception.Message);
+            if (onError is null)
+            {
+                ShowToast(exception.Message);
+            }
         }
         finally
         {
@@ -552,13 +608,42 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private void ShowToast(string message)
     {
-        var toast = new ToastMessageViewModel(message);
+        var toast = AddToast(message, false);
+        ScheduleToastClose(toast);
+    }
+
+    private ToastMessageViewModel ShowProgressToast(string message, string cancelText, Action cancelAction)
+    {
+        return AddToast(message, true, cancelText, cancelAction);
+    }
+
+    private ToastMessageViewModel AddToast(string message, bool isProgressVisible, string cancelText = "", Action? cancelAction = null)
+    {
+        var toast = new ToastMessageViewModel(message, isProgressVisible, cancelText, cancelAction);
         Toasts.Insert(0, toast);
 
         _ = Dispatcher.UIThread.InvokeAsync(async () =>
         {
             await Task.Delay(20);
             toast.IsShown = true;
+        });
+
+        return toast;
+    }
+
+    private void CompleteProgressToast(ToastMessageViewModel toast, string message)
+    {
+        toast.Message = message;
+        toast.Progress = 100;
+        toast.IsProgressVisible = false;
+        toast.IsCancelable = false;
+        ScheduleToastClose(toast);
+    }
+
+    private void ScheduleToastClose(ToastMessageViewModel toast)
+    {
+        _ = Dispatcher.UIThread.InvokeAsync(async () =>
+        {
             await Task.Delay(3000);
             toast.IsClosing = true;
             await Task.Delay(260);

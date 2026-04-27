@@ -9,6 +9,8 @@ public interface IFileDialogService
 
     Task<string?> PickUploadFileAsync();
 
+    Task<string?> PickUploadFolderAsync(string title);
+
     Task<string?> PickDownloadTargetFileAsync(string suggestedFileName);
 
     Task<string?> PickLocalFolderAsync(string title);
