@@ -8,6 +8,7 @@ namespace PureSFTP.Services;
 public sealed class SqliteAppSettingsService : IAppSettingsService
 {
     private const string LanguageKey = "language";
+    private const string ThemeModeKey = "theme_mode";
     private readonly string _databasePath;
 
     public SqliteAppSettingsService(string databasePath)
@@ -17,21 +18,25 @@ public sealed class SqliteAppSettingsService : IAppSettingsService
 
     public AppSettings Load()
     {
+        var settings = CreateDefaultSettings();
         var languageValue = ReadValue(LanguageKey);
-        if (Enum.TryParse<AppLanguage>(languageValue, out var language))
-        {
-            return new AppSettings
-            {
-                Language = language,
-            };
-        }
+        var themeModeValue = ReadValue(ThemeModeKey);
 
-        return CreateDefaultSettings();
+        return new AppSettings
+        {
+            Language = Enum.TryParse<AppLanguage>(languageValue, out var language)
+                ? language
+                : settings.Language,
+            ThemeMode = Enum.TryParse<AppThemeMode>(themeModeValue, out var themeMode)
+                ? themeMode
+                : settings.ThemeMode,
+        };
     }
 
     public void Save(AppSettings settings)
     {
         WriteValue(LanguageKey, settings.Language.ToString());
+        WriteValue(ThemeModeKey, settings.ThemeMode.ToString());
     }
 
     private string? ReadValue(string key)
@@ -71,6 +76,7 @@ public sealed class SqliteAppSettingsService : IAppSettingsService
         return new AppSettings
         {
             Language = language,
+            ThemeMode = AppThemeMode.System,
         };
     }
 

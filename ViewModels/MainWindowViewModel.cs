@@ -1174,12 +1174,14 @@ public partial class MainWindowViewModel : ViewModelBase
         var databasePath = DatabasePathProvider.GetDatabasePath();
         new SqliteDatabaseInitializer(databasePath).Initialize();
         var appSettingsService = new SqliteAppSettingsService(databasePath);
+        var themeService = new ThemeService();
+        themeService.SetTheme(appSettingsService.Load().ThemeMode);
 
         return (
             new SftpClientService(),
             new FileDialogService(),
             localizationService,
-            new SettingsViewModel(localizationService, appSettingsService),
+            new SettingsViewModel(localizationService, appSettingsService, themeService),
             new SqliteConnectionRepository(databasePath),
             new SystemCredentialStore(),
             new NewConnectionDialogService(),

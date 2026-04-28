@@ -62,6 +62,7 @@ public sealed class AppSettingsService : IAppSettingsService
         return new AppSettings
         {
             Language = language,
+            ThemeMode = AppThemeMode.System,
         };
     }
 }

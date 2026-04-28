@@ -6,32 +6,32 @@
         MinWidth="380"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
-        Background="#EEF3F8">
+        Background="{DynamicResource AppBackgroundBrush}">
     <Window.Styles>
         <Style Selector="TextBlock.title">
             <Setter Property="FontSize" Value="18" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
 
         <Style Selector="TextBlock.message">
             <Setter Property="FontSize" Value="13" />
-            <Setter Property="Foreground" Value="#5E7388" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
         </Style>
 
         <Style Selector="Button.primary">
-            <Setter Property="Background" Value="#102236" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="BorderBrush" Value="#102236" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="16,9" />
             <Setter Property="CornerRadius" Value="6" />
         </Style>
 
         <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#FFFFFF" />
-            <Setter Property="Foreground" Value="#102236" />
-            <Setter Property="BorderBrush" Value="#CAD6E2" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="16,9" />
             <Setter Property="CornerRadius" Value="6" />
@@ -40,8 +40,8 @@
 
     <Border Margin="16"
             Padding="18"
-            Background="#FCFDFE"
-            BorderBrush="#D7E1EB"
+            Background="{DynamicResource CardBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
             CornerRadius="10">
         <Grid RowDefinitions="Auto,*,Auto" RowSpacing="12">

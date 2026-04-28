@@ -34,8 +34,10 @@ public partial class App : Application
             var sftpClientService = new SftpClientService();
             var connectionRepository = new SqliteConnectionRepository(databasePath);
             var credentialStore = new SystemCredentialStore();
+            var themeService = new ThemeService();
+            themeService.SetTheme(appSettings.ThemeMode);
             var localizationService = new LocalizationService(appSettings.Language);
-            var settingsViewModel = new SettingsViewModel(localizationService, appSettingsService);
+            var settingsViewModel = new SettingsViewModel(localizationService, appSettingsService, themeService);
             var mainWindowViewModel = new MainWindowViewModel(
                 sftpClientService,
                 fileDialogService,

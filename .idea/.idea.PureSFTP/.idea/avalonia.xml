@@ -3,7 +3,9 @@
   <component name="AvaloniaProject">
     <option name="projectPerEditor">
       <map>
+        <entry key="Views/ChoiceDialogWindow.axaml" value="PureSFTP.csproj" />
         <entry key="Views/MainWindow.axaml" value="PureSFTP.csproj" />
+        <entry key="Views/NewConnectionWindow.axaml" value="PureSFTP.csproj" />
       </map>
     </option>
   </component>

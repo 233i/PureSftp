@@ -123,6 +123,14 @@ public sealed class LocalizedTextViewModel : ViewModelBase
 
     public string LanguagePreviewLabel => _localizationService.Get("LanguagePreviewLabel");
 
+    public string ThemeTitle => _localizationService.Get("ThemeTitle");
+
+    public string ThemeDescription => _localizationService.Get("ThemeDescription");
+
+    public string ThemeLabel => _localizationService.Get("ThemeLabel");
+
+    public string ThemePreviewLabel => _localizationService.Get("ThemePreviewLabel");
+
     public string AppInfoTitle => _localizationService.Get("AppInfoTitle");
 
     public string AppInfoDescription => _localizationService.Get("AppInfoDescription");

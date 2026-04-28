@@ -17,35 +17,35 @@
         MinWidth="980"
         MinHeight="720"
         WindowStartupLocation="CenterScreen"
-        Background="#EEF3F8">
+        Background="{DynamicResource AppBackgroundBrush}">
 
     <Window.Styles>
         <Style Selector="Border.card">
-            <Setter Property="Background" Value="#FCFDFE" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
             <Setter Property="CornerRadius" Value="8" />
             <Setter Property="Padding" Value="22" />
-            <Setter Property="BorderBrush" Value="#D7E1EB" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style Selector="Border.sidebar">
-            <Setter Property="Background" Value="#F7FAFD" />
+            <Setter Property="Background" Value="{DynamicResource SidebarBackgroundBrush}" />
             <Setter Property="CornerRadius" Value="10" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="BorderBrush" Value="#C9D6E2" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style Selector="TextBlock.label">
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#5E7388" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
         </Style>
 
         <Style Selector="TextBlock.sectionTitle">
             <Setter Property="FontSize" Value="20" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
 
         <Style Selector="TextBlock.heroLabel">
@@ -57,7 +57,7 @@
         <Style Selector="TextBlock.heroTitle">
             <Setter Property="FontSize" Value="28" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
 
         <Style Selector="TextBlock.heroCaption">
@@ -67,123 +67,123 @@
 
         <Style Selector="TextBlock.value">
             <Setter Property="FontSize" Value="15" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
 
         <Style Selector="TextBlock.subtle">
             <Setter Property="FontSize" Value="12" />
-            <Setter Property="Foreground" Value="#6A7F93" />
+            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         </Style>
 
         <Style Selector="Button.primary">
-            <Setter Property="Background" Value="#102236" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="BorderBrush" Value="#102236" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="16,10" />
             <Setter Property="CornerRadius" Value="6" />
         </Style>
 
         <Style Selector="Button.primary:pointerover">
-            <Setter Property="Background" Value="#18314A" />
-            <Setter Property="BorderBrush" Value="#18314A" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
 
         <Style Selector="Button.primary:pressed">
-            <Setter Property="Background" Value="#0B1826" />
-            <Setter Property="BorderBrush" Value="#0B1826" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="{DynamicResource AccentPressedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentPressedBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
 
         <Style Selector="Button.primary:disabled">
-            <Setter Property="Background" Value="#D7E1EB" />
-            <Setter Property="BorderBrush" Value="#D7E1EB" />
-            <Setter Property="Foreground" Value="#71869A" />
+            <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource DisabledBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
         </Style>
 
         <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#FFFFFF" />
-            <Setter Property="Foreground" Value="#102236" />
-            <Setter Property="BorderBrush" Value="#CAD6E2" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="16,10" />
             <Setter Property="CornerRadius" Value="6" />
         </Style>
 
         <Style Selector="Button.secondary:pointerover">
-            <Setter Property="Background" Value="#F4F7FA" />
-            <Setter Property="BorderBrush" Value="#B8C8D8" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Background" Value="{DynamicResource HeaderBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
 
         <Style Selector="Button.secondary:pressed">
-            <Setter Property="Background" Value="#DCE6F0" />
-            <Setter Property="BorderBrush" Value="#AEBFD0" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Background" Value="{DynamicResource SelectedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
 
         <Style Selector="Button.secondary:disabled">
-            <Setter Property="Background" Value="#F4F7FA" />
-            <Setter Property="BorderBrush" Value="#DFE7EF" />
-            <Setter Property="Foreground" Value="#8A9AAC" />
+            <Setter Property="Background" Value="{DynamicResource HeaderBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
         </Style>
 
         <Style Selector="Button.nav">
-            <Setter Property="Background" Value="#FFFFFF" />
-            <Setter Property="Foreground" Value="#102236" />
-            <Setter Property="BorderBrush" Value="#CAD6E2" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="16,10" />
             <Setter Property="CornerRadius" Value="6" />
         </Style>
 
         <Style Selector="ToggleButton.tab">
-            <Setter Property="Background" Value="#FFFFFF" />
-            <Setter Property="Foreground" Value="#102236" />
-            <Setter Property="BorderBrush" Value="#D7E1EB" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="18,10" />
             <Setter Property="CornerRadius" Value="8" />
         </Style>
 
         <Style Selector="ToggleButton.tab:checked">
-            <Setter Property="Background" Value="#102236" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="BorderBrush" Value="#102236" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
         </Style>
 
         <Style Selector="Button.nav:pointerover">
-            <Setter Property="Background" Value="#F4F7FA" />
-            <Setter Property="BorderBrush" Value="#B8C8D8" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Background" Value="{DynamicResource HeaderBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
 
         <Style Selector="Button.nav:pressed">
-            <Setter Property="Background" Value="#DCE6F0" />
-            <Setter Property="BorderBrush" Value="#AEBFD0" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Background" Value="{DynamicResource SelectedBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
 
         <Style Selector="Button.nav:disabled">
-            <Setter Property="Background" Value="#F4F7FA" />
-            <Setter Property="BorderBrush" Value="#DFE7EF" />
-            <Setter Property="Foreground" Value="#8A9AAC" />
+            <Setter Property="Background" Value="{DynamicResource HeaderBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
         </Style>
 
         <Style Selector="TextBox">
-            <Setter Property="Background" Value="#F6F9FC" />
+            <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="12,10" />
-            <Setter Property="BorderBrush" Value="#D7E1EB" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style Selector="ComboBox">
-            <Setter Property="Background" Value="#F6F9FC" />
+            <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="12,10" />
-            <Setter Property="BorderBrush" Value="#D7E1EB" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
@@ -202,33 +202,33 @@
         </Style>
 
         <Style Selector="ListBox.connections ListBoxItem:pointerover">
-            <Setter Property="Background" Value="#EEF4FA" />
+            <Setter Property="Background" Value="{DynamicResource HoverBackgroundBrush}" />
         </Style>
 
         <Style Selector="ListBox.connections ListBoxItem:selected">
-            <Setter Property="Background" Value="#DCE8F3" />
+            <Setter Property="Background" Value="{DynamicResource SelectedBackgroundBrush}" />
         </Style>
 
         <Style Selector="MenuItem.fileMenuItem">
             <Setter Property="MinWidth" Value="170" />
             <Setter Property="Padding" Value="14,9" />
-            <Setter Property="Background" Value="#FCFDFE" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Background" Value="{DynamicResource MenuBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
 
         <Style Selector="MenuItem.fileMenuItem:pointerover">
-            <Setter Property="Background" Value="#F4F7FA" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Background" Value="{DynamicResource HeaderBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
 
         <Style Selector="MenuItem.fileMenuItem:disabled">
-            <Setter Property="Foreground" Value="#8A9AAC" />
+            <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
         </Style>
 
         <Style Selector="Button.toastAction">
-            <Setter Property="Background" Value="#203953" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="BorderBrush" Value="#31506E" />
+            <Setter Property="Background" Value="{DynamicResource ToastButtonBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ToastBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="5" />
             <Setter Property="Padding" Value="8,4" />
@@ -236,13 +236,13 @@
         </Style>
 
         <Style Selector="Button.toastAction:pointerover">
-            <Setter Property="Background" Value="#294866" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="{DynamicResource ToastButtonHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
         </Style>
 
         <Style Selector="Button.headerButton">
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="#5E7388" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="FontSize" Value="12" />
@@ -252,7 +252,7 @@
 
         <Style Selector="Button.headerButton:pointerover">
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
     </Window.Styles>
 
@@ -344,10 +344,10 @@
                   ColumnSpacing="20">
                 <Border Grid.Column="0" Classes="sidebar">
                     <Grid RowDefinitions="Auto,Auto,*">
-                        <Border Background="#FCFDFE"
+                        <Border Background="{DynamicResource CardBackgroundBrush}"
                                 CornerRadius="10,10,0,0"
                                 Padding="16,14"
-                                BorderBrush="#D7E1EB"
+                                BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="0,0,0,1">
                             <Grid ColumnDefinitions="*,Auto"
                                   ColumnSpacing="10"
@@ -367,12 +367,12 @@
 
                         <Border Grid.Row="1"
                                 Height="1"
-                                Background="#E6EDF4" />
+                                Background="{DynamicResource DividerBrush}" />
 
                         <Border Grid.Row="2"
                                 IsVisible="{Binding HasNoSavedConnections}"
                                 Margin="14"
-                                Background="#EEF4FA"
+                                Background="{DynamicResource HoverBackgroundBrush}"
                                 CornerRadius="8"
                                 Padding="14">
                             <TextBlock Classes="subtle"
@@ -427,7 +427,7 @@
                         Classes="card"
                         Padding="0">
                     <Grid RowDefinitions="Auto,Auto,*">
-                        <Border Background="#FCFDFE"
+                        <Border Background="{DynamicResource CardBackgroundBrush}"
                                 Padding="14,12">
                             <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto"
                                   ColumnSpacing="8">
@@ -443,8 +443,8 @@
                                         Command="{Binding RefreshCommand}"
                                         Content="{Binding Texts.RefreshButton}" />
                                 <Border Grid.Column="3"
-                                        Background="#F6F9FC"
-                                        BorderBrush="#D7E1EB"
+                                        Background="{DynamicResource InputBackgroundBrush}"
+                                        BorderBrush="{DynamicResource BorderBrush}"
                                         BorderThickness="1"
                                         CornerRadius="6"
                                         Padding="10,8">
@@ -461,8 +461,8 @@
                         </Border>
 
                         <Border Grid.Row="1"
-                                Background="#F4F7FA"
-                                BorderBrush="#D7E1EB"
+                                Background="{DynamicResource HeaderBackgroundBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="0,1,0,1"
                                 Padding="12,8">
                             <Grid ColumnDefinitions="48,*,72,120,160" ColumnSpacing="12">
@@ -485,7 +485,7 @@
 
                         <ListBox Grid.Row="2"
                                  Name="RemoteItemsListBox"
-                                 Background="#FCFDFE"
+                                 Background="{DynamicResource CardBackgroundBrush}"
                                  BorderThickness="0"
                                  DoubleTapped="OnRemoteItemsDoubleTapped"
                                  SelectionMode="Multiple"
@@ -517,7 +517,7 @@
                             </ListBox.ContextMenu>
                             <ListBox.ItemTemplate>
                                 <DataTemplate x:DataType="models:RemoteItem">
-                                    <Border BorderBrush="#E4EAF0"
+                                    <Border BorderBrush="{DynamicResource RowBorderBrush}"
                                             BorderThickness="0,0,0,1"
                                             Padding="12,7"
                                             MinHeight="36">
@@ -579,11 +579,11 @@
                                                     <Border Width="24"
                                                             Height="24"
                                                             CornerRadius="12"
-                                                            Background="#EEF2F6"
-                                                            BorderBrush="#D7E1EB"
+                                                            Background="{DynamicResource PanelBackgroundBrush}"
+                                                            BorderBrush="{DynamicResource BorderBrush}"
                                                             BorderThickness="1" />
                                                     <Path Data="M 15 7 L 9 13 L 15 19"
-                                                          Stroke="#6A7F93"
+                                                          Stroke="{DynamicResource TextMutedBrush}"
                                                           StrokeThickness="2"
                                                           StrokeLineCap="Round"
                                                           StrokeJoin="Round" />
@@ -624,7 +624,7 @@
                     </Transitions>
                 </Grid.Transitions>
                 <Grid HorizontalAlignment="Center"
-                      Width="760"
+                      Width="900"
                       RowDefinitions="Auto,Auto"
                       RowSpacing="16">
                     <Border Classes="card">
@@ -637,7 +637,7 @@
                     </Border>
 
                     <Grid Grid.Row="1"
-                          ColumnDefinitions="*,*"
+                          ColumnDefinitions="*,*,*"
                           ColumnSpacing="16">
                         <Border Classes="card">
                             <StackPanel Spacing="14">
@@ -658,7 +658,7 @@
                                     </ComboBox>
                                 </StackPanel>
 
-                                <Border Background="#F4F8FB"
+                                <Border Background="{DynamicResource PanelBackgroundBrush}"
                                         CornerRadius="16"
                                         Padding="14">
                                     <StackPanel Spacing="6">
@@ -671,11 +671,41 @@
 
                         <Border Grid.Column="1" Classes="card">
                             <StackPanel Spacing="14">
+                                <TextBlock Classes="sectionTitle" Text="{Binding Texts.ThemeTitle}" />
+                                <TextBlock Classes="subtle"
+                                           Text="{Binding Texts.ThemeDescription}"
+                                           TextWrapping="Wrap" />
+
+                                <StackPanel Spacing="6">
+                                    <TextBlock Classes="label" Text="{Binding Texts.ThemeLabel}" />
+                                    <ComboBox ItemsSource="{Binding Settings.ThemeOptions}"
+                                              SelectedItem="{Binding Settings.SelectedThemeOption, Mode=TwoWay}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="models:ThemeOption">
+                                                <TextBlock Text="{Binding DisplayName}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </StackPanel>
+
+                                <Border Background="{DynamicResource PanelBackgroundBrush}"
+                                        CornerRadius="16"
+                                        Padding="14">
+                                    <StackPanel Spacing="6">
+                                        <TextBlock Classes="label" Text="{Binding Texts.ThemePreviewLabel}" />
+                                        <TextBlock Classes="value" Text="{Binding Settings.SelectedThemeDisplayName}" />
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Classes="card">
+                            <StackPanel Spacing="14">
                                 <TextBlock Classes="sectionTitle" Text="{Binding Texts.AppInfoTitle}" />
                                 <TextBlock Classes="subtle"
                                            Text="{Binding Texts.AppInfoDescription}"
                                            TextWrapping="Wrap" />
-                                <Border Background="#F4F8FB"
+                                <Border Background="{DynamicResource PanelBackgroundBrush}"
                                         CornerRadius="16"
                                         Padding="14">
                                     <StackPanel Spacing="8">
@@ -698,7 +728,7 @@
                           ItemsSource="{Binding Toasts}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="vm:ToastMessageViewModel">
-                        <Border Background="#102236"
+                        <Border Background="{DynamicResource ToastBackgroundBrush}"
                                 Width="300"
                                 CornerRadius="8"
                                 Padding="14,10"
@@ -711,7 +741,7 @@
                                 </Transitions>
                             </Border.Transitions>
                             <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
-                                <TextBlock Foreground="White"
+                                <TextBlock Foreground="{DynamicResource TextOnAccentBrush}"
                                            Text="{Binding Message}"
                                            TextWrapping="Wrap" />
                                 <Grid Grid.Row="1"
@@ -725,7 +755,7 @@
                                     <TextBlock Grid.Column="1"
                                                VerticalAlignment="Center"
                                                FontSize="11"
-                                               Foreground="#D5E2F0"
+                                               Foreground="{DynamicResource TextOnAccentBrush}"
                                                Text="{Binding ProgressText}" />
                                     <Button Grid.Column="2"
                                             Classes="toastAction"

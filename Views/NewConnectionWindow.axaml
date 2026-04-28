@@ -9,39 +9,39 @@
         MinHeight="560"
         CanResize="False"
         WindowStartupLocation="CenterOwner"
-        Background="#EEF3F8">
+        Background="{DynamicResource AppBackgroundBrush}">
     <Window.Styles>
         <Style Selector="TextBlock.label">
             <Setter Property="FontSize" Value="12" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#5E7388" />
+            <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
         </Style>
 
         <Style Selector="TextBlock.title">
             <Setter Property="FontSize" Value="20" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Foreground" Value="#102236" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
 
         <Style Selector="TextBox">
-            <Setter Property="Background" Value="#F6F9FC" />
+            <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="12,10" />
-            <Setter Property="BorderBrush" Value="#D7E1EB" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style Selector="Button.primary">
-            <Setter Property="Background" Value="#102236" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
             <Setter Property="Padding" Value="16,10" />
             <Setter Property="CornerRadius" Value="6" />
         </Style>
 
         <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="#FFFFFF" />
-            <Setter Property="Foreground" Value="#102236" />
-            <Setter Property="BorderBrush" Value="#CAD6E2" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="16,10" />
             <Setter Property="CornerRadius" Value="6" />
@@ -50,14 +50,14 @@
 
     <Border Margin="18"
             Padding="22"
-            Background="#FCFDFE"
-            BorderBrush="#D7E1EB"
+            Background="{DynamicResource CardBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
             CornerRadius="8">
         <Grid RowDefinitions="Auto,*,Auto" RowSpacing="18">
             <StackPanel Spacing="4">
                 <TextBlock Classes="title" Text="{Binding TitleText}" />
-                <TextBlock Foreground="#6A7F93"
+                <TextBlock Foreground="{DynamicResource TextMutedBrush}"
                            Text="{Binding DescriptionText}"
                            TextWrapping="Wrap" />
             </StackPanel>
@@ -92,7 +92,7 @@
                         <TextBox PasswordChar="*" PlaceholderText="password" Text="{Binding Password, Mode=TwoWay}" />
                     </StackPanel>
 
-                    <TextBlock Foreground="#6A7F93"
+                    <TextBlock Foreground="{DynamicResource TextMutedBrush}"
                                Text="{Binding TestMessage}"
                                TextWrapping="Wrap" />
                 </StackPanel>

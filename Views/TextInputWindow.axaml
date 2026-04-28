@@ -8,20 +8,20 @@
         CanResize="False"
         WindowStartupLocation="CenterOwner"
         WindowDecorations="None"
-        Background="#EEF3F8"
+        Background="{DynamicResource AppBackgroundBrush}"
         KeyDown="OnKeyDown">
     <Window.Styles>
         <Style Selector="TextBox">
-            <Setter Property="Background" Value="#F6F9FC" />
+            <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Padding" Value="12,10" />
-            <Setter Property="BorderBrush" Value="#D7E1EB" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style Selector="Button.primary">
-            <Setter Property="Background" Value="#102236" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
             <Setter Property="Padding" Value="16,10" />
             <Setter Property="CornerRadius" Value="6" />
         </Style>
@@ -29,8 +29,8 @@
 
     <Border Margin="10"
             Padding="8"
-            Background="#FCFDFE"
-            BorderBrush="#D7E1EB"
+            Background="{DynamicResource CardBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="1"
             CornerRadius="8">
         <TextBox Name="InputTextBox" />

@@ -3,6 +3,35 @@
              x:Class="PureSFTP.App"
              Name="PureSftp"
              RequestedThemeVariant="Default">
+    <Application.Resources>
+        <SolidColorBrush x:Key="AppBackgroundBrush" Color="#EEF3F8" />
+        <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FCFDFE" />
+        <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#F7FAFD" />
+        <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#F4F8FB" />
+        <SolidColorBrush x:Key="InputBackgroundBrush" Color="#F6F9FC" />
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#102236" />
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#5E7388" />
+        <SolidColorBrush x:Key="TextMutedBrush" Color="#6A7F93" />
+        <SolidColorBrush x:Key="TextOnAccentBrush" Color="White" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#D7E1EB" />
+        <SolidColorBrush x:Key="StrongBorderBrush" Color="#C9D6E2" />
+        <SolidColorBrush x:Key="AccentBrush" Color="#102236" />
+        <SolidColorBrush x:Key="AccentHoverBrush" Color="#18314A" />
+        <SolidColorBrush x:Key="AccentPressedBrush" Color="#0B1826" />
+        <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#D7E1EB" />
+        <SolidColorBrush x:Key="DisabledTextBrush" Color="#71869A" />
+        <SolidColorBrush x:Key="HoverBackgroundBrush" Color="#EEF4FA" />
+        <SolidColorBrush x:Key="SelectedBackgroundBrush" Color="#DCE8F3" />
+        <SolidColorBrush x:Key="MenuBackgroundBrush" Color="#FCFDFE" />
+        <SolidColorBrush x:Key="DividerBrush" Color="#E6EDF4" />
+        <SolidColorBrush x:Key="ToastBackgroundBrush" Color="#102236" />
+        <SolidColorBrush x:Key="ToastButtonBrush" Color="#203953" />
+        <SolidColorBrush x:Key="ToastButtonHoverBrush" Color="#294866" />
+        <SolidColorBrush x:Key="ToastBorderBrush" Color="#31506E" />
+        <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="#F4F7FA" />
+        <SolidColorBrush x:Key="RowBorderBrush" Color="#E4EAF0" />
+    </Application.Resources>
+
     <Application.Styles>
         <FluentTheme />
     </Application.Styles>
