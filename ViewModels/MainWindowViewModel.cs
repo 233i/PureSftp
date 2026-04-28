@@ -1175,7 +1175,9 @@ public partial class MainWindowViewModel : ViewModelBase
         new SqliteDatabaseInitializer(databasePath).Initialize();
         var appSettingsService = new SqliteAppSettingsService(databasePath);
         var themeService = new ThemeService();
-        themeService.SetTheme(appSettingsService.Load().ThemeMode);
+        var appSettings = appSettingsService.Load();
+        themeService.SetCustomGradient(appSettings.CustomGradientStartColor, appSettings.CustomGradientEndColor);
+        themeService.SetTheme(appSettings.ThemeMode);
 
         return (
             new SftpClientService(),

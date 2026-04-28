@@ -131,6 +131,12 @@ public sealed class LocalizedTextViewModel : ViewModelBase
 
     public string ThemePreviewLabel => _localizationService.Get("ThemePreviewLabel");
 
+    public string CustomGradientStartLabel => _localizationService.Get("CustomGradientStartLabel");
+
+    public string CustomGradientEndLabel => _localizationService.Get("CustomGradientEndLabel");
+
+    public string CustomGradientHint => _localizationService.Get("CustomGradientHint");
+
     public string AppInfoTitle => _localizationService.Get("AppInfoTitle");
 
     public string AppInfoDescription => _localizationService.Get("AppInfoDescription");

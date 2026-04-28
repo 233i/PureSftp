@@ -9,6 +9,8 @@ public sealed class SqliteAppSettingsService : IAppSettingsService
 {
     private const string LanguageKey = "language";
     private const string ThemeModeKey = "theme_mode";
+    private const string CustomGradientStartColorKey = "custom_gradient_start_color";
+    private const string CustomGradientEndColorKey = "custom_gradient_end_color";
     private readonly string _databasePath;
 
     public SqliteAppSettingsService(string databasePath)
@@ -21,6 +23,8 @@ public sealed class SqliteAppSettingsService : IAppSettingsService
         var settings = CreateDefaultSettings();
         var languageValue = ReadValue(LanguageKey);
         var themeModeValue = ReadValue(ThemeModeKey);
+        var customGradientStartColorValue = ReadValue(CustomGradientStartColorKey);
+        var customGradientEndColorValue = ReadValue(CustomGradientEndColorKey);
 
         return new AppSettings
         {
@@ -30,6 +34,12 @@ public sealed class SqliteAppSettingsService : IAppSettingsService
             ThemeMode = Enum.TryParse<AppThemeMode>(themeModeValue, out var themeMode)
                 ? themeMode
                 : settings.ThemeMode,
+            CustomGradientStartColor = string.IsNullOrWhiteSpace(customGradientStartColorValue)
+                ? settings.CustomGradientStartColor
+                : customGradientStartColorValue,
+            CustomGradientEndColor = string.IsNullOrWhiteSpace(customGradientEndColorValue)
+                ? settings.CustomGradientEndColor
+                : customGradientEndColorValue,
         };
     }
 
@@ -37,6 +47,8 @@ public sealed class SqliteAppSettingsService : IAppSettingsService
     {
         WriteValue(LanguageKey, settings.Language.ToString());
         WriteValue(ThemeModeKey, settings.ThemeMode.ToString());
+        WriteValue(CustomGradientStartColorKey, settings.CustomGradientStartColor);
+        WriteValue(CustomGradientEndColorKey, settings.CustomGradientEndColor);
     }
 
     private string? ReadValue(string key)
@@ -77,6 +89,8 @@ public sealed class SqliteAppSettingsService : IAppSettingsService
         {
             Language = language,
             ThemeMode = AppThemeMode.System,
+            CustomGradientStartColor = "#0F172A",
+            CustomGradientEndColor = "#2563EB",
         };
     }
 

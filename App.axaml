@@ -34,5 +34,11 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
+        <Style Selector="TextBox#PART_HexTextBox">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="8,0,6,0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
     </Application.Styles>
 </Application>

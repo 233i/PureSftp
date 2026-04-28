@@ -35,6 +35,7 @@ public partial class App : Application
             var connectionRepository = new SqliteConnectionRepository(databasePath);
             var credentialStore = new SystemCredentialStore();
             var themeService = new ThemeService();
+            themeService.SetCustomGradient(appSettings.CustomGradientStartColor, appSettings.CustomGradientEndColor);
             themeService.SetTheme(appSettings.ThemeMode);
             var localizationService = new LocalizationService(appSettings.Language);
             var settingsViewModel = new SettingsViewModel(localizationService, appSettingsService, themeService);

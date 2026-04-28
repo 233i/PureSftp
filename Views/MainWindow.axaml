@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:colorPicker="clr-namespace:Avalonia.Controls;assembly=Avalonia.Controls.ColorPicker"
         xmlns:models="using:PureSFTP.Models"
         xmlns:vm="using:PureSFTP.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -179,6 +180,12 @@
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
+        <Style Selector="TextBox#PART_HexTextBox">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Padding" Value="8,0,6,0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
         <Style Selector="ComboBox">
             <Setter Property="Background" Value="{DynamicResource InputBackgroundBrush}" />
             <Setter Property="CornerRadius" Value="6" />
@@ -254,6 +261,7 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         </Style>
+
     </Window.Styles>
 
     <NativeMenu.Menu>
@@ -623,22 +631,26 @@
                         <DoubleTransition Property="Opacity" Duration="0:0:0.18" />
                     </Transitions>
                 </Grid.Transitions>
-                <Grid HorizontalAlignment="Center"
-                      Width="900"
-                      RowDefinitions="Auto,Auto"
-                      RowSpacing="16">
-                    <Border Classes="card">
-                        <StackPanel Spacing="8">
-                            <TextBlock Classes="sectionTitle" Text="{Binding Texts.SettingsTitle}" />
-                            <TextBlock Classes="subtle"
-                                       Text="{Binding Texts.SettingsDescription}"
-                                       TextWrapping="Wrap" />
-                        </StackPanel>
-                    </Border>
+                <ScrollViewer HorizontalAlignment="Center"
+                              Width="900"
+                              VerticalScrollBarVisibility="Auto">
+                    <Grid RowDefinitions="Auto,Auto"
+                          RowSpacing="16">
+                        <Grid.Resources>
+                            <PlacementMode x:Key="ColorPickerFlyoutPlacement">Bottom</PlacementMode>
+                        </Grid.Resources>
+                        <Border Classes="card">
+                            <StackPanel Spacing="8">
+                                <TextBlock Classes="sectionTitle" Text="{Binding Texts.SettingsTitle}" />
+                                <TextBlock Classes="subtle"
+                                           Text="{Binding Texts.SettingsDescription}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
 
-                    <Grid Grid.Row="1"
-                          ColumnDefinitions="*,*,*"
-                          ColumnSpacing="16">
+                        <Grid Grid.Row="1"
+                              ColumnDefinitions="*,*,*"
+                              ColumnSpacing="16">
                         <Border Classes="card">
                             <StackPanel Spacing="14">
                                 <TextBlock Classes="sectionTitle" Text="{Binding Texts.LanguageTitle}" />
@@ -688,6 +700,55 @@
                                     </ComboBox>
                                 </StackPanel>
 
+                                <StackPanel Spacing="8"
+                                            IsVisible="{Binding Settings.IsCustomThemeSelected}">
+                                    <StackPanel Spacing="12">
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Classes="label" Text="{Binding Texts.CustomGradientStartLabel}" />
+                                            <colorPicker:ColorPicker Color="{Binding Settings.CustomGradientStartColorValue, Mode=TwoWay}"
+                                                                     Width="120"
+                                                                     Height="34"
+                                                                     ColorSpectrumShape="Ring"
+                                                                     IsAlphaEnabled="False"
+                                                                     IsAlphaVisible="False">
+                                                <colorPicker:ColorPicker.Resources>
+                                                    <x:Double x:Key="ColorViewComponentLabelWidth">72</x:Double>
+                                                    <x:Double x:Key="ColorViewComponentTextInputWidth">112</x:Double>
+                                                </colorPicker:ColorPicker.Resources>
+                                            </colorPicker:ColorPicker>
+                                            <TextBlock Classes="subtle"
+                                                       Text="{Binding Settings.CustomGradientStartColor}" />
+                                        </StackPanel>
+
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Classes="label" Text="{Binding Texts.CustomGradientEndLabel}" />
+                                            <colorPicker:ColorPicker Color="{Binding Settings.CustomGradientEndColorValue, Mode=TwoWay}"
+                                                                     Width="120"
+                                                                     Height="34"
+                                                                     ColorSpectrumShape="Ring"
+                                                                     IsAlphaEnabled="False"
+                                                                     IsAlphaVisible="False">
+                                                <colorPicker:ColorPicker.Resources>
+                                                    <x:Double x:Key="ColorViewComponentLabelWidth">72</x:Double>
+                                                    <x:Double x:Key="ColorViewComponentTextInputWidth">112</x:Double>
+                                                </colorPicker:ColorPicker.Resources>
+                                            </colorPicker:ColorPicker>
+                                            <TextBlock Classes="subtle"
+                                                       Text="{Binding Settings.CustomGradientEndColor}" />
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <Border Height="42"
+                                            Background="{DynamicResource AppBackgroundBrush}"
+                                            BorderBrush="{DynamicResource BorderBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="12" />
+
+                                    <TextBlock Classes="subtle"
+                                               Text="{Binding Texts.CustomGradientHint}"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+
                                 <Border Background="{DynamicResource PanelBackgroundBrush}"
                                         CornerRadius="16"
                                         Padding="14">
@@ -718,8 +779,9 @@
                                 </Border>
                             </StackPanel>
                         </Border>
+                        </Grid>
                     </Grid>
-                </Grid>
+                </ScrollViewer>
             </Grid>
 
             <ItemsControl HorizontalAlignment="Right"

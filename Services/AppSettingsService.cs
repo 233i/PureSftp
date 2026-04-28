@@ -63,6 +63,8 @@ public sealed class AppSettingsService : IAppSettingsService
         {
             Language = language,
             ThemeMode = AppThemeMode.System,
+            CustomGradientStartColor = "#0F172A",
+            CustomGradientEndColor = "#2563EB",
         };
     }
 }
