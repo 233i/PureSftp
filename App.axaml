@@ -30,6 +30,16 @@
         <SolidColorBrush x:Key="ToastBorderBrush" Color="#31506E" />
         <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="#F4F7FA" />
         <SolidColorBrush x:Key="RowBorderBrush" Color="#E4EAF0" />
+        <SolidColorBrush x:Key="CommandBarBackgroundBrush" Color="#F9FBFD" />
+        <SolidColorBrush x:Key="SidebarItemHoverBrush" Color="#EEF4FA" />
+        <SolidColorBrush x:Key="SidebarItemSelectedBrush" Color="#DFEAF5" />
+        <SolidColorBrush x:Key="BrowserSurfaceBrush" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="PathBackgroundBrush" Color="#F3F7FB" />
+        <SolidColorBrush x:Key="FileRowHoverBrush" Color="#F3F8FD" />
+        <SolidColorBrush x:Key="FileRowSelectedBrush" Color="#E4F0FB" />
+        <SolidColorBrush x:Key="StatusOnlineBrush" Color="#18A058" />
+        <SolidColorBrush x:Key="StatusOfflineBrush" Color="#9AA8B6" />
+        <SolidColorBrush x:Key="StatusWorkingBrush" Color="#D68A00" />
     </Application.Resources>
 
     <Application.Styles>

@@ -110,6 +110,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
         Connection.PropertyChanged += OnConnectionChanged;
         Browser.PropertyChanged += OnBrowserChanged;
+        Browser.Items.CollectionChanged += (_, _) => OnBrowserItemsChanged();
         _localizationService.LanguageChanged += OnLanguageChanged;
         LoadSavedConnections();
     }
@@ -163,6 +164,18 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public SavedConnectionViewModel? ActiveConnection { get; private set; }
 
+    public string ActiveConnectionTitle => ActiveConnection?.Name ?? T("NoActiveConnectionTitle");
+
+    public bool IsConnectionBadgeOnline => IsConnected && !IsBusy;
+
+    public bool IsConnectionBadgeWorking => IsBusy;
+
+    public bool IsConnectionBadgeOffline => !IsConnected && !IsBusy;
+
+    public bool IsBrowserPlaceholderVisible => !IsConnected || Browser.Items.Count == 0;
+
+    public string BrowserPlaceholderText => IsConnected ? T("BrowserEmptyHint") : T("BrowserOfflineHint");
+
     public string SelectionSummary
     {
         get
@@ -198,12 +211,16 @@ public partial class MainWindowViewModel : ViewModelBase
     partial void OnIsBusyChanged(bool value)
     {
         OnPropertyChanged(nameof(ConnectionStateText));
+        RefreshConnectionBadge();
     }
 
     partial void OnIsConnectedChanged(bool value)
     {
         OnPropertyChanged(nameof(ConnectionStateText));
         OnPropertyChanged(nameof(ConnectionSummary));
+        OnPropertyChanged(nameof(BrowserPlaceholderText));
+        OnPropertyChanged(nameof(IsBrowserPlaceholderVisible));
+        RefreshConnectionBadge();
     }
 
     partial void OnCurrentPageChanged(AppPage value)
@@ -1065,6 +1082,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         OnPropertyChanged(nameof(ActiveConnection));
+        OnPropertyChanged(nameof(ActiveConnectionTitle));
         OnPropertyChanged(nameof(ConnectionSummary));
     }
 
@@ -1149,13 +1167,27 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    private void OnBrowserItemsChanged()
+    {
+        OnPropertyChanged(nameof(IsBrowserPlaceholderVisible));
+    }
+
     private void OnLanguageChanged(object? sender, EventArgs e)
     {
         StatusMessage = T("StatusLanguageChanged", Settings.SelectedLanguageDisplayName);
         OnPropertyChanged(nameof(ConnectionStateText));
         OnPropertyChanged(nameof(ConnectionSummary));
         OnPropertyChanged(nameof(SelectionSummary));
+        OnPropertyChanged(nameof(ActiveConnectionTitle));
+        OnPropertyChanged(nameof(BrowserPlaceholderText));
         RefreshSortHeaders();
+    }
+
+    private void RefreshConnectionBadge()
+    {
+        OnPropertyChanged(nameof(IsConnectionBadgeOnline));
+        OnPropertyChanged(nameof(IsConnectionBadgeWorking));
+        OnPropertyChanged(nameof(IsConnectionBadgeOffline));
     }
 
     private static (

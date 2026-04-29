@@ -23,17 +23,32 @@
     <Window.Styles>
         <Style Selector="Border.card">
             <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
-            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="CornerRadius" Value="14" />
             <Setter Property="Padding" Value="22" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="Border.commandBar">
+            <Setter Property="Background" Value="{DynamicResource CommandBarBackgroundBrush}" />
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="Padding" Value="14,12" />
             <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
         <Style Selector="Border.sidebar">
             <Setter Property="Background" Value="{DynamicResource SidebarBackgroundBrush}" />
-            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="CornerRadius" Value="16" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+
+        <Style Selector="Border.browserSurface">
+            <Setter Property="Background" Value="{DynamicResource BrowserSurfaceBrush}" />
+            <Setter Property="CornerRadius" Value="16" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
         </Style>
 
@@ -76,13 +91,25 @@
             <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
         </Style>
 
+        <Style Selector="TextBlock.brandTitle">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        </Style>
+
         <Style Selector="Button.primary">
             <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
             <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Padding" Value="16,10" />
-            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="14,8" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.14" />
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.14" />
+                </Transitions>
+            </Setter>
         </Style>
 
         <Style Selector="Button.primary:pointerover">
@@ -104,12 +131,18 @@
         </Style>
 
         <Style Selector="Button.secondary">
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource PathBackgroundBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource StrongBorderBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Padding" Value="16,10" />
-            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="CornerRadius" Value="9" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.14" />
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.14" />
+                </Transitions>
+            </Setter>
         </Style>
 
         <Style Selector="Button.secondary:pointerover">
@@ -140,12 +173,24 @@
         </Style>
 
         <Style Selector="ToggleButton.tab">
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}" />
+            <Setter Property="Background" Value="Transparent" />
             <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="Padding" Value="18,10" />
-            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="CornerRadius" Value="18" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.16" />
+                    <BrushTransition Property="Foreground" Duration="0:0:0.16" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="ToggleButton.tab:pointerover">
+            <Setter Property="Background" Value="{DynamicResource HoverBackgroundBrush}" />
         </Style>
 
         <Style Selector="ToggleButton.tab:checked">
@@ -202,18 +247,50 @@
 
         <Style Selector="ListBox.connections ListBoxItem">
             <Setter Property="Padding" Value="0" />
-            <Setter Property="Margin" Value="0,2" />
+            <Setter Property="Margin" Value="8,2" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="CornerRadius" Value="10" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.14" />
+                </Transitions>
+            </Setter>
         </Style>
 
         <Style Selector="ListBox.connections ListBoxItem:pointerover">
-            <Setter Property="Background" Value="{DynamicResource HoverBackgroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SidebarItemHoverBrush}" />
         </Style>
 
         <Style Selector="ListBox.connections ListBoxItem:selected">
-            <Setter Property="Background" Value="{DynamicResource SelectedBackgroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource SidebarItemSelectedBrush}" />
+        </Style>
+
+        <Style Selector="ListBox.remoteItems">
+            <Setter Property="Background" Value="{DynamicResource BrowserSurfaceBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="6,4" />
+        </Style>
+
+        <Style Selector="ListBox.remoteItems ListBoxItem">
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="CornerRadius" Value="9" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="Background" Duration="0:0:0.14" />
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="ListBox.remoteItems ListBoxItem:pointerover">
+            <Setter Property="Background" Value="{DynamicResource FileRowHoverBrush}" />
+        </Style>
+
+        <Style Selector="ListBox.remoteItems ListBoxItem:selected">
+            <Setter Property="Background" Value="{DynamicResource FileRowSelectedBrush}" />
         </Style>
 
         <Style Selector="MenuItem.fileMenuItem">
@@ -326,47 +403,103 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid Margin="20"
+    <Grid Margin="16"
           RowDefinitions="Auto,*"
-          RowSpacing="16">
-        <Border Classes="card" Padding="12">
-            <Grid ColumnDefinitions="Auto,Auto,*,Auto"
-                  ColumnSpacing="12">
-                <ToggleButton Classes="tab"
-                              Content="{Binding Texts.WorkspaceNavButton}"
-                              IsChecked="{Binding IsWorkspacePageSelected, Mode=TwoWay}" />
-                <ToggleButton Grid.Column="1"
-                              Classes="tab"
-                              Content="{Binding Texts.SettingsNavButton}"
-                              IsChecked="{Binding IsSettingsPageSelected, Mode=TwoWay}" />
-                <TextBlock Grid.Column="3"
-                           VerticalAlignment="Center"
-                           Classes="label"
-                           Text="{Binding ConnectionStateText}" />
+          RowSpacing="12">
+        <Border Classes="commandBar">
+            <Grid ColumnDefinitions="Auto,*,Auto"
+                  ColumnSpacing="16">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="10"
+                            VerticalAlignment="Center">
+                    <Border Width="28"
+                            Height="28"
+                            CornerRadius="9"
+                            Background="{DynamicResource AccentBrush}">
+                        <Path Data="M 9 9 L 14 5 L 19 9 M 14 6 L 14 22 M 9 15 L 19 15"
+                              Stroke="{DynamicResource TextOnAccentBrush}"
+                              StrokeThickness="2"
+                              StrokeLineCap="Round"
+                              StrokeJoin="Round"
+                              HorizontalAlignment="Center"
+                              VerticalAlignment="Center" />
+                    </Border>
+                    <TextBlock Classes="brandTitle"
+                               VerticalAlignment="Center"
+                               Text="PureSftp" />
+                </StackPanel>
+
+                <Border Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        Background="{DynamicResource PathBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="22"
+                        Padding="4">
+                    <StackPanel Orientation="Horizontal">
+                        <ToggleButton Classes="tab"
+                                      Content="{Binding Texts.WorkspaceNavButton}"
+                                      IsChecked="{Binding IsWorkspacePageSelected, Mode=TwoWay}" />
+                        <ToggleButton Classes="tab"
+                                      Content="{Binding Texts.SettingsNavButton}"
+                                      IsChecked="{Binding IsSettingsPageSelected, Mode=TwoWay}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2"
+                        Background="{DynamicResource PathBackgroundBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="18"
+                        Padding="10,7">
+                    <Grid ColumnDefinitions="Auto,Auto"
+                          ColumnSpacing="8">
+                        <Grid Width="10"
+                              Height="10"
+                              VerticalAlignment="Center">
+                            <Ellipse Fill="{DynamicResource StatusOnlineBrush}"
+                                     IsVisible="{Binding IsConnectionBadgeOnline}" />
+                            <Ellipse Fill="{DynamicResource StatusWorkingBrush}"
+                                     IsVisible="{Binding IsConnectionBadgeWorking}" />
+                            <Ellipse Fill="{DynamicResource StatusOfflineBrush}"
+                                     IsVisible="{Binding IsConnectionBadgeOffline}" />
+                        </Grid>
+                        <StackPanel Grid.Column="1"
+                                    Spacing="1"
+                                    VerticalAlignment="Center">
+                            <TextBlock Classes="label"
+                                       FontSize="11"
+                                       Text="{Binding ConnectionStateText}" />
+                            <TextBlock Classes="subtle"
+                                       FontSize="11"
+                                       Text="{Binding ActiveConnectionTitle}"
+                                       TextTrimming="CharacterEllipsis"
+                                       MaxWidth="180" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
             </Grid>
         </Border>
 
         <Grid Grid.Row="1">
             <Grid IsVisible="{Binding IsWorkspacePageSelected}"
-                  ColumnDefinitions="340,*"
-                  ColumnSpacing="20">
+                  ColumnDefinitions="300,*"
+                  ColumnSpacing="14">
                 <Border Grid.Column="0" Classes="sidebar">
-                    <Grid RowDefinitions="Auto,Auto,*">
-                        <Border Background="{DynamicResource CardBackgroundBrush}"
-                                CornerRadius="10,10,0,0"
-                                Padding="16,14"
-                                BorderBrush="{DynamicResource BorderBrush}"
-                                BorderThickness="0,0,0,1">
+                    <Grid RowDefinitions="Auto,*">
+                        <Border Padding="16,14,12,10">
                             <Grid ColumnDefinitions="*,Auto"
                                   ColumnSpacing="10"
-                                  MinHeight="40"
+                                  MinHeight="34"
                                   VerticalAlignment="Center">
-                                <TextBlock Classes="sectionTitle"
-                                           FontSize="17"
+                                <TextBlock Classes="label"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
                                            VerticalAlignment="Center"
                                            Text="{Binding Texts.ConnectionsTitle}" />
                                 <Button Grid.Column="1"
                                         Classes="primary"
+                                        Padding="12,7"
                                         VerticalAlignment="Center"
                                         Command="{Binding ShowNewConnectionCommand}"
                                         Content="{Binding Texts.NewConnectionButton}" />
@@ -374,21 +507,18 @@
                         </Border>
 
                         <Border Grid.Row="1"
-                                Height="1"
-                                Background="{DynamicResource DividerBrush}" />
-
-                        <Border Grid.Row="2"
                                 IsVisible="{Binding HasNoSavedConnections}"
                                 Margin="14"
-                                Background="{DynamicResource HoverBackgroundBrush}"
-                                CornerRadius="8"
-                                Padding="14">
+                                Background="{DynamicResource SidebarItemHoverBrush}"
+                                CornerRadius="12"
+                                Padding="14,13"
+                                VerticalAlignment="Top">
                             <TextBlock Classes="subtle"
                                        Text="{Binding Texts.NoConnectionsHint}"
                                        TextWrapping="Wrap" />
                         </Border>
 
-                        <ListBox Grid.Row="2"
+                        <ListBox Grid.Row="1"
                                  Name="SavedConnectionsListBox"
                                  Classes="connections"
                                  DoubleTapped="OnSavedConnectionsDoubleTapped"
@@ -407,23 +537,23 @@
                             </ListBox.ContextMenu>
                             <ListBox.ItemTemplate>
                                 <DataTemplate x:DataType="vm:SavedConnectionViewModel">
-                                    <Grid ColumnDefinitions="16,*"
+                                    <Grid ColumnDefinitions="*,Auto"
                                           ColumnSpacing="10"
-                                          MinHeight="38"
+                                          MinHeight="40"
                                           Background="Transparent"
-                                          Margin="10,0">
-                                        <Ellipse Width="7"
-                                                 Height="7"
-                                                 Fill="#18A058"
-                                                 IsVisible="{Binding IsActive}"
-                                                 VerticalAlignment="Center"
-                                                 HorizontalAlignment="Center" />
-                                        <TextBlock Grid.Column="1"
-                                                   Classes="value"
+                                          Margin="12,0">
+                                        <TextBlock Classes="value"
                                                    FontSize="14"
                                                    VerticalAlignment="Center"
                                                    Text="{Binding Name}"
                                                    TextTrimming="CharacterEllipsis" />
+                                        <Ellipse Grid.Column="1"
+                                                 Width="7"
+                                                 Height="7"
+                                                 Fill="{DynamicResource StatusOnlineBrush}"
+                                                 IsVisible="{Binding IsActive}"
+                                                 VerticalAlignment="Center"
+                                                 HorizontalAlignment="Center" />
                                     </Grid>
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
@@ -432,35 +562,33 @@
                 </Border>
 
                 <Border Grid.Column="1"
-                        Classes="card"
+                        Classes="browserSurface"
                         Padding="0">
                     <Grid RowDefinitions="Auto,Auto,*">
-                        <Border Background="{DynamicResource CardBackgroundBrush}"
-                                Padding="14,12">
-                            <Grid ColumnDefinitions="Auto,Auto,Auto,*,Auto"
+                        <Border Padding="12"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="0,0,0,1">
+                            <Grid ColumnDefinitions="Auto,Auto,*,Auto"
                                   ColumnSpacing="8">
                                 <Button Classes="secondary"
                                         Command="{Binding GoToParentCommand}"
                                         Content="{Binding Texts.UpButton}" />
                                 <Button Grid.Column="1"
                                         Classes="secondary"
-                                        Command="{Binding OpenSelectedCommand}"
-                                        Content="{Binding Texts.OpenButton}" />
-                                <Button Grid.Column="2"
-                                        Classes="secondary"
                                         Command="{Binding RefreshCommand}"
                                         Content="{Binding Texts.RefreshButton}" />
-                                <Border Grid.Column="3"
-                                        Background="{DynamicResource InputBackgroundBrush}"
+                                <Border Grid.Column="2"
+                                        Background="{DynamicResource PathBackgroundBrush}"
                                         BorderBrush="{DynamicResource BorderBrush}"
                                         BorderThickness="1"
-                                        CornerRadius="6"
-                                        Padding="10,8">
+                                        CornerRadius="10"
+                                        Padding="12,8">
                                     <TextBlock Classes="value"
+                                               FontSize="13"
                                                Text="{Binding Browser.CurrentPath}"
                                                TextTrimming="CharacterEllipsis" />
                                 </Border>
-                                <TextBlock Grid.Column="4"
+                                <TextBlock Grid.Column="3"
                                            VerticalAlignment="Center"
                                            Classes="subtle"
                                            Text="{Binding SelectionSummary}"
@@ -472,155 +600,178 @@
                                 Background="{DynamicResource HeaderBackgroundBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="0,1,0,1"
-                                Padding="12,8">
-                            <Grid ColumnDefinitions="48,*,72,120,160" ColumnSpacing="12">
+                                Padding="14,8">
+                            <Grid ColumnDefinitions="42,*,112,160" ColumnSpacing="12">
                                 <TextBlock Classes="label" Text="" />
                                 <Button Grid.Column="1"
                                         Classes="headerButton"
                                         Command="{Binding SortByNameCommand}"
                                         Content="{Binding SortNameHeader}" />
-                                <TextBlock Grid.Column="2" Classes="label" Text="" />
-                                <Button Grid.Column="3"
+                                <Button Grid.Column="2"
                                         Classes="headerButton"
                                         Command="{Binding SortBySizeCommand}"
                                         Content="{Binding SortSizeHeader}" />
-                                <Button Grid.Column="4"
+                                <Button Grid.Column="3"
                                         Classes="headerButton"
                                         Command="{Binding SortByModifiedAtCommand}"
                                         Content="{Binding SortModifiedHeader}" />
                             </Grid>
                         </Border>
 
-                        <ListBox Grid.Row="2"
-                                 Name="RemoteItemsListBox"
-                                 Background="{DynamicResource CardBackgroundBrush}"
-                                 BorderThickness="0"
-                                 DoubleTapped="OnRemoteItemsDoubleTapped"
-                                 SelectionMode="Multiple"
-                                 SelectionChanged="OnRemoteItemsSelectionChanged"
-                                 DragDrop.AllowDrop="True"
-                                 DragDrop.DragOver="OnRemoteItemsDragOver"
-                                 DragDrop.Drop="OnRemoteItemsDrop"
-                                 ItemsSource="{Binding Browser.Items}"
-                                 SelectedItem="{Binding Browser.SelectedItem, Mode=TwoWay}">
-                            <ListBox.ContextMenu>
-                                <ContextMenu>
-                                    <MenuItem Classes="fileMenuItem"
-                                              Header="{Binding Texts.UploadButton}"
-                                              Command="{Binding UploadCommand}" />
-                                    <MenuItem Classes="fileMenuItem"
-                                              Header="{Binding Texts.UploadFolderButton}"
-                                              Command="{Binding UploadFolderCommand}" />
-                                    <MenuItem Classes="fileMenuItem"
-                                              Header="{Binding Texts.DownloadButton}"
-                                              Command="{Binding DownloadCommand}" />
-                                    <MenuItem Classes="fileMenuItem"
-                                              Header="{Binding Texts.DeleteButton}"
-                                              Command="{Binding DeleteSelectedCommand}" />
-                                    <Separator />
-                                    <MenuItem Classes="fileMenuItem"
-                                              Header="{Binding Texts.CreateFolderButton}"
-                                              Command="{Binding ShowCreateFolderDialogCommand}" />
-                                </ContextMenu>
-                            </ListBox.ContextMenu>
-                            <ListBox.ItemTemplate>
-                                <DataTemplate x:DataType="models:RemoteItem">
-                                    <Border BorderBrush="{DynamicResource RowBorderBrush}"
-                                            BorderThickness="0,0,0,1"
-                                            Padding="12,7"
-                                            MinHeight="36">
-                                        <Grid ColumnDefinitions="48,*,72,120,160" ColumnSpacing="12">
-                                            <Grid Width="30"
-                                                  Height="26"
-                                                  VerticalAlignment="Center"
-                                                  HorizontalAlignment="Center">
-                                                <Grid IsVisible="{Binding ShowFolderIcon}">
-                                                    <Border Width="26"
-                                                            Height="17"
-                                                            CornerRadius="4"
-                                                            Background="#F6C15B"
-                                                            VerticalAlignment="Bottom"
-                                                            HorizontalAlignment="Center" />
-                                                    <Border Width="15"
-                                                            Height="7"
-                                                            CornerRadius="3,3,0,0"
-                                                            Background="#E9A738"
-                                                            Margin="3,2,0,0"
-                                                            VerticalAlignment="Top"
-                                                            HorizontalAlignment="Left" />
-                                                    <Border Width="26"
-                                                            Height="13"
-                                                            CornerRadius="4"
-                                                            Background="#FFD66E"
-                                                            VerticalAlignment="Bottom"
-                                                            HorizontalAlignment="Center" />
-                                                </Grid>
+                        <Grid Grid.Row="2">
+                            <ListBox Name="RemoteItemsListBox"
+                                     Classes="remoteItems"
+                                     DoubleTapped="OnRemoteItemsDoubleTapped"
+                                     SelectionMode="Multiple"
+                                     SelectionChanged="OnRemoteItemsSelectionChanged"
+                                     DragDrop.AllowDrop="True"
+                                     DragDrop.DragOver="OnRemoteItemsDragOver"
+                                     DragDrop.Drop="OnRemoteItemsDrop"
+                                     ItemsSource="{Binding Browser.Items}"
+                                     SelectedItem="{Binding Browser.SelectedItem, Mode=TwoWay}">
+                                <ListBox.ContextMenu>
+                                    <ContextMenu>
+                                        <MenuItem Classes="fileMenuItem"
+                                                  Header="{Binding Texts.UploadButton}"
+                                                  Command="{Binding UploadCommand}" />
+                                        <MenuItem Classes="fileMenuItem"
+                                                  Header="{Binding Texts.UploadFolderButton}"
+                                                  Command="{Binding UploadFolderCommand}" />
+                                        <MenuItem Classes="fileMenuItem"
+                                                  Header="{Binding Texts.DownloadButton}"
+                                                  Command="{Binding DownloadCommand}" />
+                                        <MenuItem Classes="fileMenuItem"
+                                                  Header="{Binding Texts.DeleteButton}"
+                                                  Command="{Binding DeleteSelectedCommand}" />
+                                        <Separator />
+                                        <MenuItem Classes="fileMenuItem"
+                                                  Header="{Binding Texts.CreateFolderButton}"
+                                                  Command="{Binding ShowCreateFolderDialogCommand}" />
+                                    </ContextMenu>
+                                </ListBox.ContextMenu>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate x:DataType="models:RemoteItem">
+                                        <Border BorderBrush="{DynamicResource RowBorderBrush}"
+                                                BorderThickness="0,0,0,1"
+                                                Padding="10,7"
+                                                MinHeight="42">
+                                            <Grid ColumnDefinitions="42,*,112,160" ColumnSpacing="12">
+                                                <Grid Width="30"
+                                                      Height="26"
+                                                      VerticalAlignment="Center"
+                                                      HorizontalAlignment="Center">
+                                                    <Grid IsVisible="{Binding ShowFolderIcon}">
+                                                        <Border Width="26"
+                                                                Height="17"
+                                                                CornerRadius="4"
+                                                                Background="#F6C15B"
+                                                                VerticalAlignment="Bottom"
+                                                                HorizontalAlignment="Center" />
+                                                        <Border Width="15"
+                                                                Height="7"
+                                                                CornerRadius="3,3,0,0"
+                                                                Background="#E9A738"
+                                                                Margin="3,2,0,0"
+                                                                VerticalAlignment="Top"
+                                                                HorizontalAlignment="Left" />
+                                                        <Border Width="26"
+                                                                Height="13"
+                                                                CornerRadius="4"
+                                                                Background="#FFD66E"
+                                                                VerticalAlignment="Bottom"
+                                                                HorizontalAlignment="Center" />
+                                                    </Grid>
 
-                                                <Grid IsVisible="{Binding ShowFileIcon}">
-                                                    <Border Width="21"
-                                                            Height="25"
-                                                            CornerRadius="4"
-                                                            Background="#EAF2FF"
-                                                            BorderBrush="#9BBBE8"
-                                                            BorderThickness="1"
-                                                            HorizontalAlignment="Center" />
-                                                    <Path Data="M 16 1 L 21 6 L 16 6 Z"
-                                                          Fill="#CFE0F8"
-                                                          HorizontalAlignment="Center" />
-                                                    <Border Width="11"
-                                                            Height="2"
-                                                            Background="#5D8DD6"
-                                                            CornerRadius="1"
-                                                            Margin="0,10,0,0"
-                                                            HorizontalAlignment="Center"
-                                                            VerticalAlignment="Top" />
-                                                    <Border Width="11"
-                                                            Height="2"
-                                                            Background="#A7C3EA"
-                                                            CornerRadius="1"
-                                                            Margin="0,15,0,0"
-                                                            HorizontalAlignment="Center"
-                                                            VerticalAlignment="Top" />
-                                                </Grid>
+                                                    <Grid IsVisible="{Binding ShowFileIcon}">
+                                                        <Border Width="21"
+                                                                Height="25"
+                                                                CornerRadius="4"
+                                                                Background="#EAF2FF"
+                                                                BorderBrush="#9BBBE8"
+                                                                BorderThickness="1"
+                                                                HorizontalAlignment="Center" />
+                                                        <Path Data="M 16 1 L 21 6 L 16 6 Z"
+                                                              Fill="#CFE0F8"
+                                                              HorizontalAlignment="Center" />
+                                                        <Border Width="11"
+                                                                Height="2"
+                                                                Background="#5D8DD6"
+                                                                CornerRadius="1"
+                                                                Margin="0,10,0,0"
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Top" />
+                                                        <Border Width="11"
+                                                                Height="2"
+                                                                Background="#A7C3EA"
+                                                                CornerRadius="1"
+                                                                Margin="0,15,0,0"
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Top" />
+                                                    </Grid>
 
-                                                <Grid IsVisible="{Binding ShowParentIcon}">
-                                                    <Border Width="24"
-                                                            Height="24"
-                                                            CornerRadius="12"
-                                                            Background="{DynamicResource PanelBackgroundBrush}"
-                                                            BorderBrush="{DynamicResource BorderBrush}"
-                                                            BorderThickness="1" />
-                                                    <Path Data="M 15 7 L 9 13 L 15 19"
-                                                          Stroke="{DynamicResource TextMutedBrush}"
-                                                          StrokeThickness="2"
-                                                          StrokeLineCap="Round"
-                                                          StrokeJoin="Round" />
+                                                    <Grid IsVisible="{Binding ShowParentIcon}">
+                                                        <Border Width="24"
+                                                                Height="24"
+                                                                CornerRadius="12"
+                                                                Background="{DynamicResource PanelBackgroundBrush}"
+                                                                BorderBrush="{DynamicResource BorderBrush}"
+                                                                BorderThickness="1" />
+                                                        <Path Data="M 15 7 L 9 13 L 15 19"
+                                                              Stroke="{DynamicResource TextMutedBrush}"
+                                                              StrokeThickness="2"
+                                                              StrokeLineCap="Round"
+                                                              StrokeJoin="Round" />
+                                                    </Grid>
                                                 </Grid>
+                                                <TextBlock Grid.Column="1"
+                                                           VerticalAlignment="Center"
+                                                           Classes="value"
+                                                           Text="{Binding Name}"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Grid.Column="2"
+                                                           VerticalAlignment="Center"
+                                                           Classes="subtle"
+                                                           Text="{Binding SizeText}" />
+                                                <TextBlock Grid.Column="3"
+                                                           VerticalAlignment="Center"
+                                                           Classes="subtle"
+                                                           Text="{Binding ModifiedText}" />
                                             </Grid>
-                                            <TextBlock Grid.Column="1"
-                                                       VerticalAlignment="Center"
-                                                       Classes="value"
-                                                       Text="{Binding Name}"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <Ellipse Grid.Column="2"
-                                                     Width="8"
-                                                     Height="8"
-                                                     Fill="{Binding TypeDotColor}"
-                                                     VerticalAlignment="Center"
-                                                     HorizontalAlignment="Left" />
-                                            <TextBlock Grid.Column="3"
-                                                       VerticalAlignment="Center"
-                                                       Classes="subtle"
-                                                       Text="{Binding SizeText}" />
-                                            <TextBlock Grid.Column="4"
-                                                       VerticalAlignment="Center"
-                                                       Classes="subtle"
-                                                       Text="{Binding ModifiedText}" />
-                                        </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <Border IsVisible="{Binding IsBrowserPlaceholderVisible}"
+                                    IsHitTestVisible="False"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    MaxWidth="380"
+                                    Padding="24">
+                                <StackPanel Spacing="12"
+                                            HorizontalAlignment="Center">
+                                    <Border Width="48"
+                                            Height="48"
+                                            CornerRadius="18"
+                                            Background="{DynamicResource PathBackgroundBrush}"
+                                            BorderBrush="{DynamicResource BorderBrush}"
+                                            BorderThickness="1"
+                                            HorizontalAlignment="Center">
+                                        <Path Data="M 16 17 L 24 11 L 32 17 M 24 12 L 24 36 M 16 26 L 32 26"
+                                              Stroke="{DynamicResource TextMutedBrush}"
+                                              StrokeThickness="2.2"
+                                              StrokeLineCap="Round"
+                                              StrokeJoin="Round"
+                                              HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
                                     </Border>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                                    <TextBlock Classes="subtle"
+                                               Text="{Binding BrowserPlaceholderText}"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
                     </Grid>
                 </Border>
             </Grid>

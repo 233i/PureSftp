@@ -117,6 +117,16 @@ public sealed class ThemeService : IThemeService
         SetBrush(application, "ToastBorderBrush", palette.ToastBorder);
         SetBrush(application, "HeaderBackgroundBrush", palette.HeaderBackground);
         SetBrush(application, "RowBorderBrush", palette.RowBorder);
+        SetBrush(application, "CommandBarBackgroundBrush", palette.CommandBarBackground);
+        SetBrush(application, "SidebarItemHoverBrush", palette.SidebarItemHover);
+        SetBrush(application, "SidebarItemSelectedBrush", palette.SidebarItemSelected);
+        SetBrush(application, "BrowserSurfaceBrush", palette.BrowserSurface);
+        SetBrush(application, "PathBackgroundBrush", palette.PathBackground);
+        SetBrush(application, "FileRowHoverBrush", palette.FileRowHover);
+        SetBrush(application, "FileRowSelectedBrush", palette.FileRowSelected);
+        SetBrush(application, "StatusOnlineBrush", palette.StatusOnline);
+        SetBrush(application, "StatusOfflineBrush", palette.StatusOffline);
+        SetBrush(application, "StatusWorkingBrush", palette.StatusWorking);
     }
 
     private bool IsDark(Application application)
@@ -179,6 +189,16 @@ public sealed class ThemeService : IThemeService
             ToastBorder = basePalette.ToastBorder,
             HeaderBackground = basePalette.HeaderBackground,
             RowBorder = basePalette.RowBorder,
+            CommandBarBackground = basePalette.CommandBarBackground,
+            SidebarItemHover = WithAlpha(accent, isDark ? 0.16 : 0.08),
+            SidebarItemSelected = WithAlpha(accent, isDark ? 0.24 : 0.14),
+            BrowserSurface = basePalette.BrowserSurface,
+            PathBackground = basePalette.PathBackground,
+            FileRowHover = WithAlpha(accent, isDark ? 0.14 : 0.07),
+            FileRowSelected = WithAlpha(accent, isDark ? 0.24 : 0.13),
+            StatusOnline = basePalette.StatusOnline,
+            StatusOffline = basePalette.StatusOffline,
+            StatusWorking = accent,
         };
     }
 
@@ -275,6 +295,16 @@ public sealed class ThemeService : IThemeService
             ToastBorder = Color.Parse("#31506E"),
             HeaderBackground = Color.Parse("#F4F7FA"),
             RowBorder = Color.Parse("#E4EAF0"),
+            CommandBarBackground = Color.Parse("#F9FBFD"),
+            SidebarItemHover = Color.Parse("#EEF4FA"),
+            SidebarItemSelected = Color.Parse("#DFEAF5"),
+            BrowserSurface = Color.Parse("#FFFFFF"),
+            PathBackground = Color.Parse("#F3F7FB"),
+            FileRowHover = Color.Parse("#F3F8FD"),
+            FileRowSelected = Color.Parse("#E4F0FB"),
+            StatusOnline = Color.Parse("#18A058"),
+            StatusOffline = Color.Parse("#9AA8B6"),
+            StatusWorking = Color.Parse("#D68A00"),
         };
     }
 
@@ -308,6 +338,16 @@ public sealed class ThemeService : IThemeService
             ToastBorder = Color.Parse("#43627F"),
             HeaderBackground = Color.Parse("#172638"),
             RowBorder = Color.Parse("#26384A"),
+            CommandBarBackground = Color.Parse("#142033"),
+            SidebarItemHover = Color.Parse("#1B2A3F"),
+            SidebarItemSelected = Color.Parse("#223955"),
+            BrowserSurface = Color.Parse("#121D2D"),
+            PathBackground = Color.Parse("#101A29"),
+            FileRowHover = Color.Parse("#1A2A42"),
+            FileRowSelected = Color.Parse("#223D5D"),
+            StatusOnline = Color.Parse("#22C55E"),
+            StatusOffline = Color.Parse("#738195"),
+            StatusWorking = Color.Parse("#F59E0B"),
         };
     }
 }

@@ -55,4 +55,24 @@ public sealed class ThemePalette
     public required Color HeaderBackground { get; init; }
 
     public required Color RowBorder { get; init; }
+
+    public required Color CommandBarBackground { get; init; }
+
+    public required Color SidebarItemHover { get; init; }
+
+    public required Color SidebarItemSelected { get; init; }
+
+    public required Color BrowserSurface { get; init; }
+
+    public required Color PathBackground { get; init; }
+
+    public required Color FileRowHover { get; init; }
+
+    public required Color FileRowSelected { get; init; }
+
+    public required Color StatusOnline { get; init; }
+
+    public required Color StatusOffline { get; init; }
+
+    public required Color StatusWorking { get; init; }
 }
