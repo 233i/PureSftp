@@ -1,6 +1,8 @@
 using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 using PureSFTP.Models;
@@ -32,6 +34,11 @@ public partial class MainWindow : Window
         _textInputDialogService = textInputDialogService;
         _choiceDialogService = choiceDialogService;
         InitializeComponent();
+        SavedConnectionsListBox.AddHandler(
+            InputElement.PointerPressedEvent,
+            OnSavedConnectionsPointerPressedHandled,
+            RoutingStrategies.Tunnel | RoutingStrategies.Bubble,
+            handledEventsToo: true);
         Opened += OnOpened;
     }
 
@@ -58,12 +65,63 @@ public partial class MainWindow : Window
 
     private async void OnSavedConnectionsDoubleTapped(object? sender, TappedEventArgs e)
     {
-        if (DataContext is not MainWindowViewModel viewModel ||
-            SavedConnectionsListBox.SelectedItem is not SavedConnectionViewModel savedConnection)
+        if (DataContext is not MainWindowViewModel viewModel)
         {
             return;
         }
 
+        var savedConnection = GetSavedConnectionFromEvent(e) ??
+            SavedConnectionsListBox.SelectedItem as SavedConnectionViewModel;
+        await ConnectSavedConnectionAsync(viewModel, savedConnection);
+    }
+
+    private async void OnSavedConnectionItemDoubleTapped(object? sender, TappedEventArgs e)
+    {
+        if (DataContext is not MainWindowViewModel viewModel)
+        {
+            return;
+        }
+
+        var savedConnection = (sender as Control)?.DataContext as SavedConnectionViewModel;
+        await ConnectSavedConnectionAsync(viewModel, savedConnection);
+        e.Handled = true;
+    }
+
+    private async void OnSavedConnectionItemPointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.ClickCount != 2 ||
+            DataContext is not MainWindowViewModel viewModel)
+        {
+            return;
+        }
+
+        var savedConnection = (sender as Control)?.DataContext as SavedConnectionViewModel;
+        await ConnectSavedConnectionAsync(viewModel, savedConnection);
+        e.Handled = true;
+    }
+
+    private async void OnSavedConnectionsPointerPressedHandled(object? sender, PointerPressedEventArgs e)
+    {
+        if (e.ClickCount != 2 ||
+            DataContext is not MainWindowViewModel viewModel)
+        {
+            return;
+        }
+
+        var savedConnection = GetSavedConnectionFromEvent(e) ??
+            SavedConnectionsListBox.SelectedItem as SavedConnectionViewModel;
+        await ConnectSavedConnectionAsync(viewModel, savedConnection);
+        e.Handled = true;
+    }
+
+    private async Task ConnectSavedConnectionAsync(MainWindowViewModel viewModel, SavedConnectionViewModel? savedConnection)
+    {
+        if (savedConnection is null)
+        {
+            return;
+        }
+
+        SavedConnectionsListBox.SelectedItem = savedConnection;
         if (viewModel.ConnectSavedConnectionCommand.CanExecute(savedConnection))
         {
             await viewModel.ConnectSavedConnectionCommand.ExecuteAsync(savedConnection);
@@ -127,6 +185,13 @@ public partial class MainWindow : Window
 
         var listBoxItem = visual.FindAncestorOfType<ListBoxItem>();
         SavedConnectionsListBox.SelectedItem = listBoxItem?.DataContext;
+    }
+
+    private static SavedConnectionViewModel? GetSavedConnectionFromEvent(RoutedEventArgs e)
+    {
+        return e.Source is Avalonia.Visual visual
+            ? (visual as ListBoxItem ?? visual.FindAncestorOfType<ListBoxItem>())?.DataContext as SavedConnectionViewModel
+            : null;
     }
 
     private async void OnEditSavedConnectionMenuClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

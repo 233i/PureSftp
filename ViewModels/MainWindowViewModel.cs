@@ -288,6 +288,7 @@ public partial class MainWindowViewModel : ViewModelBase
             SetActiveConnection(null);
             await _sftpClientService.DisconnectAsync();
             StatusMessage = error.Message;
+            ShowToast(StatusMessage);
         });
     }
 
@@ -410,6 +411,7 @@ public partial class MainWindowViewModel : ViewModelBase
             IsConnected = false;
             await _sftpClientService.DisconnectAsync();
             StatusMessage = error.Message;
+            ShowToast(StatusMessage);
         });
     }
 
