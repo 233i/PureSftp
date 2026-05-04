@@ -364,6 +364,10 @@
                                         Command="{Binding UploadFolderCommand}" />
                         <NativeMenuItem Header="{Binding Texts.DownloadButton}"
                                         Command="{Binding DownloadCommand}" />
+                        <NativeMenuItem Header="{Binding Texts.RenameButton}"
+                                        Command="{Binding RenameSelectedCommand}" />
+                        <NativeMenuItem Header="{Binding Texts.ChmodButton}"
+                                        Command="{Binding ChangePermissionsCommand}" />
                         <NativeMenuItemSeparator />
                         <NativeMenuItem Header="{Binding Texts.CreateFolderButton}"
                                         Command="{Binding ShowCreateFolderDialogCommand}" />
@@ -554,11 +558,11 @@
                 <Border Grid.Column="1"
                         Classes="browserSurface"
                         Padding="0">
-                    <Grid RowDefinitions="Auto,Auto,*">
+                    <Grid RowDefinitions="Auto,Auto,Auto,*">
                         <Border Padding="12"
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="0,0,0,1">
-                            <Grid ColumnDefinitions="Auto,Auto,*,Auto"
+                            <Grid ColumnDefinitions="Auto,Auto,*,220,Auto,Auto"
                                   ColumnSpacing="8">
                                 <Button Classes="secondary"
                                         Command="{Binding GoToParentCommand}"
@@ -578,7 +582,14 @@
                                                Text="{Binding Browser.CurrentPath}"
                                                TextTrimming="CharacterEllipsis" />
                                 </Border>
-                                <TextBlock Grid.Column="3"
+                                <TextBox Grid.Column="3"
+                                         Text="{Binding Browser.FilterText, Mode=TwoWay}"
+                                         PlaceholderText="{Binding Texts.FilterPlaceholder}" />
+                                <CheckBox Grid.Column="4"
+                                          VerticalAlignment="Center"
+                                          Content="{Binding Texts.ShowHiddenItemsLabel}"
+                                          IsChecked="{Binding Browser.ShowHiddenItems, Mode=TwoWay}" />
+                                <TextBlock Grid.Column="5"
                                            VerticalAlignment="Center"
                                            Classes="subtle"
                                            Text="{Binding SelectionSummary}"
@@ -591,7 +602,7 @@
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="0,1,0,1"
                                 Padding="14,8">
-                            <Grid ColumnDefinitions="42,*,112,160" ColumnSpacing="12">
+                            <Grid ColumnDefinitions="42,*,92,74,74,106,150" ColumnSpacing="12">
                                 <TextBlock Classes="label" Text="" />
                                 <Button Grid.Column="1"
                                         Classes="headerButton"
@@ -605,10 +616,19 @@
                                         Classes="headerButton"
                                         Command="{Binding SortByModifiedAtCommand}"
                                         Content="{Binding SortModifiedHeader}" />
+                                <TextBlock Grid.Column="4"
+                                           Classes="label"
+                                           Text="{Binding Texts.OwnerHeader}" />
+                                <TextBlock Grid.Column="5"
+                                           Classes="label"
+                                           Text="{Binding Texts.GroupHeader}" />
+                                <TextBlock Grid.Column="6"
+                                           Classes="label"
+                                           Text="{Binding Texts.PermissionsHeader}" />
                             </Grid>
                         </Border>
 
-                        <Grid Grid.Row="2">
+                        <Grid Grid.Row="3">
                             <ListBox Name="RemoteItemsListBox"
                                      Classes="remoteItems"
                                      DoubleTapped="OnRemoteItemsDoubleTapped"
@@ -631,6 +651,12 @@
                                                   Header="{Binding Texts.DownloadButton}"
                                                   Command="{Binding DownloadCommand}" />
                                         <MenuItem Classes="fileMenuItem"
+                                                  Header="{Binding Texts.RenameButton}"
+                                                  Command="{Binding RenameSelectedCommand}" />
+                                        <MenuItem Classes="fileMenuItem"
+                                                  Header="{Binding Texts.ChmodButton}"
+                                                  Command="{Binding ChangePermissionsCommand}" />
+                                        <MenuItem Classes="fileMenuItem"
                                                   Header="{Binding Texts.DeleteButton}"
                                                   Command="{Binding DeleteSelectedCommand}" />
                                         <Separator />
@@ -645,7 +671,7 @@
                                                 BorderThickness="0,0,0,1"
                                                 Padding="10,7"
                                                 MinHeight="42">
-                                            <Grid ColumnDefinitions="42,*,112,160" ColumnSpacing="12">
+                                            <Grid ColumnDefinitions="42,*,92,74,74,106,150" ColumnSpacing="12">
                                                 <Grid Width="30"
                                                       Height="26"
                                                       VerticalAlignment="Center"
@@ -726,6 +752,19 @@
                                                            VerticalAlignment="Center"
                                                            Classes="subtle"
                                                            Text="{Binding ModifiedText}" />
+                                                <TextBlock Grid.Column="4"
+                                                           VerticalAlignment="Center"
+                                                           Classes="subtle"
+                                                           Text="{Binding OwnerText}" />
+                                                <TextBlock Grid.Column="5"
+                                                           VerticalAlignment="Center"
+                                                           Classes="subtle"
+                                                           Text="{Binding GroupText}" />
+                                                <TextBlock Grid.Column="6"
+                                                           VerticalAlignment="Center"
+                                                           Classes="subtle"
+                                                           FontFamily="Consolas, Menlo, monospace"
+                                                           Text="{Binding PermissionsText}" />
                                             </Grid>
                                         </Border>
                                     </DataTemplate>

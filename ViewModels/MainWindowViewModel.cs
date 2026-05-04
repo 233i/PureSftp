@@ -39,6 +39,8 @@ public partial class MainWindowViewModel : ViewModelBase
     [NotifyCanExecuteChangedFor(nameof(UploadFolderCommand))]
     [NotifyCanExecuteChangedFor(nameof(DownloadCommand))]
     [NotifyCanExecuteChangedFor(nameof(DeleteSelectedCommand))]
+    [NotifyCanExecuteChangedFor(nameof(RenameSelectedCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ChangePermissionsCommand))]
     [NotifyCanExecuteChangedFor(nameof(CreateFolderCommand))]
     private bool isConnected;
 
@@ -380,6 +382,12 @@ public partial class MainWindowViewModel : ViewModelBase
     private bool CanDeleteSelected() =>
         IsConnected && GetSelectedTransferItems().Count > 0;
 
+    private bool CanRenameSelected() =>
+        IsConnected && GetSelectedTransferItems().Count == 1;
+
+    private bool CanChangePermissions() =>
+        IsConnected && GetSelectedTransferItems().Count == 1;
+
     private bool CanCreateFolder() => IsConnected && !string.IsNullOrWhiteSpace(NewFolderName);
 
     private bool CanShowCreateFolderDialog() => IsConnected;
@@ -574,6 +582,92 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         await DeleteItemsAsync(selectedItems);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanRenameSelected))]
+    private async Task RenameSelectedAsync()
+    {
+        var selectedItem = GetSelectedTransferItems().SingleOrDefault();
+        if (selectedItem is null)
+        {
+            return;
+        }
+
+        var newName = await _textInputDialogService.ShowAsync(T("RenameButton"), T("RenamePlaceholder"), selectedItem.Name);
+        if (string.IsNullOrWhiteSpace(newName) || string.Equals(newName, selectedItem.Name, StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        if (newName.Contains('/', StringComparison.Ordinal) || newName.Contains('\\', StringComparison.Ordinal))
+        {
+            StatusMessage = T("StatusInvalidName");
+            ShowToast(StatusMessage);
+            return;
+        }
+
+        var newRemotePath = RemotePathHelper.Combine(RemotePathHelper.GetParent(selectedItem.FullPath), newName);
+        await RunBusyAsync(T("StatusRenaming", selectedItem.Name), async () =>
+        {
+            if (await _sftpClientService.ExistsAsync(newRemotePath))
+            {
+                StatusMessage = T("StatusRemoteNameExists", newName);
+                ShowToast(StatusMessage);
+                return;
+            }
+
+            await _sftpClientService.RenameAsync(selectedItem.FullPath, newRemotePath);
+            await LoadDirectoryCoreAsync(Browser.CurrentPath);
+            StatusMessage = T("StatusRenamed", selectedItem.Name, newName);
+            ShowToast(StatusMessage);
+        },
+        error =>
+        {
+            StatusMessage = T("StatusRenameFailed", error.Message);
+            ShowToast(StatusMessage);
+            return Task.CompletedTask;
+        });
+    }
+
+    [RelayCommand(CanExecute = nameof(CanChangePermissions))]
+    private async Task ChangePermissionsAsync()
+    {
+        var selectedItem = GetSelectedTransferItems().SingleOrDefault();
+        if (selectedItem is null)
+        {
+            return;
+        }
+
+        var currentMode = ToOctalPermissions(selectedItem.Permissions);
+        var permissionText = await _textInputDialogService.ShowAsync(
+            T("ChmodButton"),
+            T("ChmodPlaceholder"),
+            currentMode);
+        if (string.IsNullOrWhiteSpace(permissionText))
+        {
+            return;
+        }
+
+        if (!TryParseOctalPermissions(permissionText, out var permissions))
+        {
+            StatusMessage = T("StatusInvalidPermissions");
+            ShowToast(StatusMessage);
+            return;
+        }
+
+        await RunBusyAsync(T("StatusChangingPermissions", selectedItem.Name), async () =>
+        {
+            await _sftpClientService.ChangePermissionsAsync(selectedItem.FullPath, permissions);
+            await LoadDirectoryCoreAsync(Browser.CurrentPath);
+            StatusMessage = T("StatusChangedPermissions", selectedItem.Name, permissionText);
+            ShowToast(StatusMessage);
+        },
+        error =>
+        {
+            StatusMessage = T("StatusChangePermissionsFailed", error.Message);
+            ShowToast(StatusMessage);
+            return Task.CompletedTask;
+        });
     }
 
     [RelayCommand(CanExecute = nameof(CanCreateFolder))]
@@ -902,6 +996,46 @@ public partial class MainWindowViewModel : ViewModelBase
             : Math.Clamp(completed * 100d / total, 0, 100);
     }
 
+    private static bool TryParseOctalPermissions(string value, out short permissions)
+    {
+        permissions = 0;
+        var trimmed = value.Trim();
+        if (trimmed.Length is < 3 or > 4 || trimmed.Any(character => character is < '0' or > '7'))
+        {
+            return false;
+        }
+
+        try
+        {
+            permissions = Convert.ToInt16(trimmed, 8);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static string ToOctalPermissions(string permissions)
+    {
+        if (permissions.Length < 10)
+        {
+            return "755";
+        }
+
+        var owner = PermissionDigit(permissions[1], permissions[2], permissions[3]);
+        var group = PermissionDigit(permissions[4], permissions[5], permissions[6]);
+        var others = PermissionDigit(permissions[7], permissions[8], permissions[9]);
+        return $"{owner}{group}{others}";
+    }
+
+    private static int PermissionDigit(char read, char write, char execute)
+    {
+        return (read == 'r' ? 4 : 0) +
+            (write == 'w' ? 2 : 0) +
+            (execute is 'x' or 's' or 't' ? 1 : 0);
+    }
+
     private async Task RunBusyAsync(string busyMessage, Func<Task> action, Func<Exception, Task>? onError = null)
     {
         if (IsBusy)
@@ -1165,6 +1299,8 @@ public partial class MainWindowViewModel : ViewModelBase
             GoToParentCommand.NotifyCanExecuteChanged();
             DownloadCommand.NotifyCanExecuteChanged();
             DeleteSelectedCommand.NotifyCanExecuteChanged();
+            RenameSelectedCommand.NotifyCanExecuteChanged();
+            ChangePermissionsCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(SelectionSummary));
         }
     }

@@ -230,6 +230,16 @@ public sealed class SftpClientService : ISftpClientService
         });
     }
 
+    public async Task RenameAsync(string currentRemotePath, string newRemotePath)
+    {
+        await Task.Run(() => GetClient().RenameFile(currentRemotePath, newRemotePath));
+    }
+
+    public async Task ChangePermissionsAsync(string remotePath, short permissions)
+    {
+        await Task.Run(() => GetClient().ChangePermissions(remotePath, permissions));
+    }
+
     public async ValueTask DisposeAsync()
     {
         await DisconnectAsync();
@@ -244,7 +254,28 @@ public sealed class SftpClientService : ISftpClientService
             IsDirectory = item.IsDirectory,
             Size = item.IsDirectory ? 0 : item.Attributes.Size,
             ModifiedAt = new DateTimeOffset(item.LastWriteTimeUtc),
+            Permissions = FormatPermissions(item),
+            UserId = item.UserId,
+            GroupId = item.GroupId,
         };
+    }
+
+    private static string FormatPermissions(ISftpFile item)
+    {
+        var type = item.IsDirectory ? 'd' : item.IsSymbolicLink ? 'l' : '-';
+        return string.Create(10, (type, item.Attributes), static (buffer, state) =>
+        {
+            buffer[0] = state.type;
+            buffer[1] = state.Attributes.OwnerCanRead ? 'r' : '-';
+            buffer[2] = state.Attributes.OwnerCanWrite ? 'w' : '-';
+            buffer[3] = state.Attributes.OwnerCanExecute ? 'x' : '-';
+            buffer[4] = state.Attributes.GroupCanRead ? 'r' : '-';
+            buffer[5] = state.Attributes.GroupCanWrite ? 'w' : '-';
+            buffer[6] = state.Attributes.GroupCanExecute ? 'x' : '-';
+            buffer[7] = state.Attributes.OthersCanRead ? 'r' : '-';
+            buffer[8] = state.Attributes.OthersCanWrite ? 'w' : '-';
+            buffer[9] = state.Attributes.OthersCanExecute ? 'x' : '-';
+        });
     }
 
     private static long GetDirectorySize(SftpClient client, string remoteDirectoryPath)

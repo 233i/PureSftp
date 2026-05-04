@@ -87,6 +87,10 @@ public sealed class LocalizedTextViewModel : ViewModelBase
 
     public string DeleteButton => _localizationService.Get("DeleteButton");
 
+    public string RenameButton => _localizationService.Get("RenameButton");
+
+    public string ChmodButton => _localizationService.Get("ChmodButton");
+
     public string CreateFolderHint => _localizationService.Get("CreateFolderHint");
 
     public string CreateFolderPlaceholder => _localizationService.Get("CreateFolderPlaceholder");
@@ -107,7 +111,17 @@ public sealed class LocalizedTextViewModel : ViewModelBase
 
     public string SizeHeader => _localizationService.Get("SizeHeader");
 
+    public string OwnerHeader => _localizationService.Get("OwnerHeader");
+
+    public string GroupHeader => _localizationService.Get("GroupHeader");
+
+    public string PermissionsHeader => _localizationService.Get("PermissionsHeader");
+
     public string ModifiedHeader => _localizationService.Get("ModifiedHeader");
+
+    public string FilterPlaceholder => _localizationService.Get("FilterPlaceholder");
+
+    public string ShowHiddenItemsLabel => _localizationService.Get("ShowHiddenItemsLabel");
 
     public string ActivityTitle => _localizationService.Get("ActivityTitle");
 

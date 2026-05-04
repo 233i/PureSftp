@@ -27,6 +27,12 @@ public partial class RemoteBrowserViewModel : ViewModelBase
     [CommunityToolkit.Mvvm.ComponentModel.ObservableProperty]
     private RemoteItem? selectedItem;
 
+    [CommunityToolkit.Mvvm.ComponentModel.ObservableProperty]
+    private string filterText = string.Empty;
+
+    [CommunityToolkit.Mvvm.ComponentModel.ObservableProperty]
+    private bool showHiddenItems;
+
     public RemoteSortColumn SortColumn { get; private set; } = RemoteSortColumn.Name;
 
     public bool IsSortAscending { get; private set; } = true;
@@ -75,6 +81,16 @@ public partial class RemoteBrowserViewModel : ViewModelBase
 
     public int SelectedItemCount => SelectedItems.Count;
 
+    partial void OnFilterTextChanged(string value)
+    {
+        ApplyItems();
+    }
+
+    partial void OnShowHiddenItemsChanged(bool value)
+    {
+        ApplyItems();
+    }
+
     private void ApplyItems()
     {
         Items.Clear();
@@ -86,10 +102,22 @@ public partial class RemoteBrowserViewModel : ViewModelBase
             Items.Add(RemoteItem.CreateParentShortcut(RemotePathHelper.GetParent(CurrentPath)));
         }
 
-        foreach (var item in SortItems())
+        foreach (var item in SortItems().Where(IsVisibleItem))
         {
             Items.Add(item);
         }
+    }
+
+    private bool IsVisibleItem(RemoteItem item)
+    {
+        if (!ShowHiddenItems && item.IsHidden)
+        {
+            return false;
+        }
+
+        var filter = FilterText.Trim();
+        return string.IsNullOrEmpty(filter) ||
+            item.Name.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
 
     private IEnumerable<RemoteItem> SortItems()

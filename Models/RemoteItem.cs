@@ -17,6 +17,20 @@ public sealed class RemoteItem
 
     public DateTimeOffset ModifiedAt { get; init; }
 
+    public string Permissions { get; init; } = string.Empty;
+
+    public int UserId { get; init; }
+
+    public int GroupId { get; init; }
+
+    public bool IsHidden => !IsParentShortcut && Name.StartsWith(".", StringComparison.Ordinal);
+
+    public string PermissionsText => IsParentShortcut ? string.Empty : Permissions;
+
+    public string OwnerText => IsParentShortcut ? string.Empty : UserId.ToString();
+
+    public string GroupText => IsParentShortcut ? string.Empty : GroupId.ToString();
+
     public string ItemType =>
         IsParentShortcut
             ? ".."
@@ -72,6 +86,9 @@ public sealed class RemoteItem
             IsParentShortcut = true,
             Size = 0,
             ModifiedAt = DateTimeOffset.MinValue,
+            Permissions = string.Empty,
+            UserId = 0,
+            GroupId = 0,
         };
     }
 }

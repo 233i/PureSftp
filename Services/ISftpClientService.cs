@@ -35,4 +35,8 @@ public interface ISftpClientService : IAsyncDisposable
     Task DeleteAsync(RemoteItem item);
 
     Task CreateDirectoryAsync(string remoteDirectoryPath);
+
+    Task RenameAsync(string currentRemotePath, string newRemotePath);
+
+    Task ChangePermissionsAsync(string remotePath, short permissions);
 }

@@ -12,10 +12,17 @@ public partial class TextInputWindow : Window
     }
 
     public TextInputWindow(string title, string placeholder)
+        : this(title, placeholder, string.Empty)
+    {
+    }
+
+    public TextInputWindow(string title, string placeholder, string initialValue)
         : this()
     {
         Title = title;
         InputTextBox.PlaceholderText = placeholder;
+        InputTextBox.Text = initialValue;
+        InputTextBox.SelectAll();
     }
 
     private void OnKeyDown(object? sender, KeyEventArgs e)

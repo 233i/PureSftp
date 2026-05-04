@@ -15,12 +15,17 @@ public sealed class TextInputDialogService : ITextInputDialogService
 
     public async Task<string?> ShowAsync(string title, string placeholder)
     {
+        return await ShowAsync(title, placeholder, string.Empty);
+    }
+
+    public async Task<string?> ShowAsync(string title, string placeholder, string initialValue)
+    {
         if (_owner is null)
         {
             return null;
         }
 
-        var window = new TextInputWindow(title, placeholder);
+        var window = new TextInputWindow(title, placeholder, initialValue);
         return await window.ShowDialog<string?>(_owner);
     }
 }
